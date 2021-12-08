@@ -11,7 +11,8 @@
 		"bench": "npm run clean && npm run bench:compile && npm run bench:run",
 		"bench:run": "node ./bench_out/bench",
 		"bench:compile": "tsc -p tsconfig-bench.json",
-		"bench:watch": "tsc -p tsconfig-bench.json -w"
+		"bench:watch": "tsc -p tsconfig-bench.json -w",
+		"prepack": "npm test && npm run build"
 	},
 	"devDependencies": {
 		"@types/benchmark": "^2.1.1",

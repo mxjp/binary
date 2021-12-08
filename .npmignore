@@ -1,0 +1,6 @@
+/.github
+/bench*
+/test*
+/.gitignore
+/ava*
+/tsconfig*
