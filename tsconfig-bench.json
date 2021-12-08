@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"declaration": false,
 		"module": "CommonJS",
+		"target": "ESNext",
 		"rootDir": ".",
 		"outDir": "bench_out"
 	},
