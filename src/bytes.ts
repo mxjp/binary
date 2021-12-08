@@ -1,0 +1,71 @@
+
+/**
+ * An array of bytes.
+ */
+export type Bytes = ArrayBuffer | Uint8Array;
+
+/**
+ * Get the specified bytes as an uint 8 array.
+ */
+export function asUint8Array(bytes: Bytes): Uint8Array {
+	return bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+}
+
+/**
+ * Test if two byte arrays are equal.
+ *
+ * @returns True if the specified arrays are equal.
+ */
+export function bytesEqual(a: Bytes, b: Bytes): boolean {
+	if (a === b) {
+		return true;
+	}
+	if (a.byteLength !== b.byteLength) {
+		return false;
+	}
+	const arrayA = asUint8Array(a);
+	const arrayB = asUint8Array(b);
+	for (let i = 0; i < arrayA.byteLength; i++) {
+		if (arrayA[i] !== arrayB[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Compare two byte arrays lexically.
+ *
+ * @returns -1 if a is smaller then b, 0 if a is equal to b and 1 if a is greater than b.
+ */
+export function lexicalCompareBytes(a: Bytes, b: Bytes): number {
+	const arrayA = asUint8Array(a);
+	const arrayB = asUint8Array(b);
+	for (let i = 0; i < arrayA.byteLength; i++) {
+		if (arrayA[i] > arrayB[i]) {
+			return 1;
+		} else if (arrayA[i] < arrayB[i]) {
+			return -1;
+		}
+	}
+	return arrayA.byteLength > arrayB.byteLength ? 1 : (arrayA.byteLength < arrayB.byteLength ? -1 : 0);
+}
+
+/**
+ * Concat multiple byte arrays.
+ */
+export function concatBytes(chunks: Bytes[], chunksByteLength?: number): Uint8Array {
+	if (chunksByteLength === undefined) {
+		chunksByteLength = 0;
+		for (let i = 0; i < chunks.length; i++) {
+			chunksByteLength += chunks[i].byteLength;
+		}
+	}
+	const array = new Uint8Array(chunksByteLength);
+	for (let i = 0, o = 0; i < chunks.length; i++) {
+		const chunk = asUint8Array(chunks[i]);
+		array.set(chunk, o);
+		o += chunk.byteLength;
+	}
+	return array;
+}
