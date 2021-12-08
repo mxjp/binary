@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"declaration": false,
+		"module": "CommonJS",
+		"rootDir": ".",
+		"outDir": "bench_out"
+	},
+	"include": [
+		"src",
+		"bench"
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"name": "@mpt/binary",
+	"version": "1.0.0",
+	"scripts": {
+		"clean": "rimraf ./dist/**/* ./test_out/**/* ./bench_out/**/*",
+		"test": "tsc -p tsconfig-test.json && ava -v",
+		"start": "npm run clean && tsc -p tsconfig-test.json && concurrently \"tsc -p tsconfig-test.json -w\" \"ava -v -w\"",
+		"build": "concurrently npm:build:*",
+		"build:es": "tsc -p tsconfig-es.json",
+		"build:cjs": "tsc -p tsconfig-cjs.json",
+		"bench": "npm run clean && npm run bench:compile && npm run bench:run",
+		"bench:run": "node ./bench_out/bench",
+		"bench:compile": "tsc -p tsconfig-bench.json",
+		"bench:watch": "tsc -p tsconfig-bench.json -w"
+	},
+	"devDependencies": {
+		"@types/benchmark": "^2.1.1",
+		"@types/node": "^16.11.11",
+		"ansi-colors": "^4.1.1",
+		"ava": "^3.15.0",
+		"benchmark": "^2.1.4",
+		"concurrently": "^6.4.0",
+		"globby": "^11.0.4",
+		"ignore": "^5.1.9",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.5.2"
+	}
+}
