@@ -1,6 +1,6 @@
 {
 	"name": "@mpt/binary",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Utilities for binary data serialization & encoding",
 	"license": "MIT",
 	"author": "Max J. Polster",
