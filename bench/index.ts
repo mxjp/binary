@@ -3,6 +3,7 @@ import globby from "globby";
 import { join } from "path";
 import createMatcher from "ignore";
 import colors from "ansi-colors";
+import { setupSyncSharedBuffer } from "../src/shared-buffers";
 
 interface BenchModule {
 	default?: (suite: Suite) => void;
@@ -12,6 +13,8 @@ interface BenchModule {
 	const matcher = createMatcher();
 	const patterns = process.argv.slice(2);
 	patterns.forEach(pattern => matcher.add(pattern));
+
+	setupSyncSharedBuffer(20000);
 
 	for (const filename of await globby("./**/*.bench.js", { cwd: __dirname })) {
 		const name = filename.replace(/\\/g, "/").replace(/\.bench\.js$/, "");

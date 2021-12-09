@@ -1,4 +1,5 @@
 import { asUint8Array, Bytes } from "../bytes";
+import { getSyncSharedBuffer } from "../shared-buffers";
 
 const TEXT_DECODER = new TextDecoder("ascii");
 const TEXT_ENCODER = new TextEncoder();
@@ -35,12 +36,13 @@ const HEX_ASCII_TO_BYTE = new Uint16Array(26215);
 export function encodeHex(value: Bytes, upperCase = false): string {
 	const bytes = asUint8Array(value);
 	const byteToHexAscii = upperCase ? BYTE_TO_HEX_ASCII_U : BYTE_TO_HEX_ASCII_L;
-	const buffer = new ArrayBuffer(bytes.byteLength << 1);
-	const view = new DataView(buffer);
+	const bufferLength = bytes.byteLength << 1;
+	const buffer = getSyncSharedBuffer(bufferLength);
+	const view = new DataView(buffer, 0, bufferLength);
 	for (let i = 0; i < bytes.byteLength; i++) {
 		view.setUint16(i << 1, byteToHexAscii[bytes[i]]);
 	}
-	return TEXT_DECODER.decode(new Uint8Array(buffer));
+	return TEXT_DECODER.decode(new Uint8Array(buffer, 0, bufferLength));
 }
 
 /**
@@ -49,14 +51,20 @@ export function encodeHex(value: Bytes, upperCase = false): string {
  * @param value The text to decode.
  * @returns The decoded bytes.
  */
-export function decodeHex(value: string): Uint8Array {
+export function decodeHex(value: string, bytes?: Uint8Array): Uint8Array {
 	const byteLength = value.length / 2;
 	if (!Number.isInteger(byteLength)) {
 		throw new TypeError("invalid hex data");
 	}
-	const bytes = new Uint8Array(byteLength);
-	const chars = TEXT_ENCODER.encode(value);
-	const view = new DataView(chars.buffer, chars.byteOffset, chars.byteLength);
+	if (bytes === undefined) {
+		bytes = new Uint8Array(byteLength);
+	}
+
+	const buffer = getSyncSharedBuffer(value.length);
+	const chars = new Uint8Array(buffer);
+	TEXT_ENCODER.encodeInto(value, chars);
+
+	const view = new DataView(buffer);
 	for (let i = 0; i < byteLength; i++) {
 		const byte = HEX_ASCII_TO_BYTE[view.getUint16(i << 1, false)];
 		if (byte === 0 || byte === undefined) {

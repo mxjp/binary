@@ -12,6 +12,15 @@ export function asUint8Array(bytes: Bytes): Uint8Array {
 }
 
 /**
+ * Get the specified bytes as a data view.
+ */
+export function asDataView(bytes: Bytes): DataView {
+	return bytes instanceof Uint8Array
+		? new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+		: new DataView(bytes);
+}
+
+/**
  * Test if two byte arrays are equal.
  *
  * @returns True if the specified arrays are equal.

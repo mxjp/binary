@@ -18,6 +18,10 @@ export class Binary {
 	public get view(): DataView {
 		return new DataView(this.buffer);
 	}
+
+	public get reverse(): Binary {
+		return new Binary(Buffer.from(Array.from(this.nodeBuffer).reverse()).toString("hex"));
+	}
 }
 
 export function binary(parts: TemplateStringsArray, ...values: (ArrayBufferLike | string)[]): Binary {
