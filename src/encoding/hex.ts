@@ -51,14 +51,12 @@ export function encodeHex(value: Bytes, upperCase = false): string {
  * @param value The text to decode.
  * @returns The decoded bytes.
  */
-export function decodeHex(value: string, bytes?: Uint8Array): Uint8Array {
+export function decodeHex(value: string): Uint8Array {
 	const byteLength = value.length / 2;
 	if (!Number.isInteger(byteLength)) {
 		throw new TypeError("invalid hex data");
 	}
-	if (bytes === undefined) {
-		bytes = new Uint8Array(byteLength);
-	}
+	const bytes = new Uint8Array(byteLength);
 
 	const buffer = getSyncSharedBuffer(value.length);
 	const chars = new Uint8Array(buffer);
