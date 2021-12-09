@@ -9,14 +9,9 @@ export default function (suite: Suite) {
 		10000,
 	]) {
 		const data = Buffer.from(getPseudoRandomBytes(length)).toString("hex");
-		const buffer = new Uint8Array(20000);
 
-		suite.add(`${length} bytes (alloc buffer)`, () => {
+		suite.add(`${length} bytes`, () => {
 			decodeHex(data);
-		});
-
-		suite.add(`${length} bytes (reuse buffer)`, () => {
-			decodeHex(data, buffer);
 		});
 	}
 }
