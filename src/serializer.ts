@@ -85,11 +85,21 @@ export class Serializer {
 	/**
 	 * Append a 16-bit unsigned big endian integer.
 	 */
-	public uint16(value: number): this {
+	 public uint16(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
 			throw new RangeError(`uint16 out of range: ${value}`);
 		}
 		return this.append(2, serializeUint16, value);
+	}
+
+	/**
+	 * Append a 16-bit unsigned little endian integer.
+	 */
+	 public uint16le(value: number): this {
+		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
+			throw new RangeError(`uint16 out of range: ${value}`);
+		}
+		return this.append(2, serializeUint16le, value);
 	}
 
 	/**
@@ -100,6 +110,64 @@ export class Serializer {
 			throw new RangeError(`uint32 out of range: ${value}`);
 		}
 		return this.append(4, serializeUint32, value);
+	}
+
+	/**
+	 * Append a 32-bit unsigned little endian integer.
+	 */
+	public uint32le(value: number): this {
+		if (!Number.isInteger(value) || value < 0 || value > 0xFFFFFFFF) {
+			throw new RangeError(`uint32 out of range: ${value}`);
+		}
+		return this.append(4, serializeUint32le, value);
+	}
+
+	/**
+	 * Append a 64-bit unsigned big endian integer.
+	 */
+	public uint64(value: bigint): this {
+		if (value > 0xFFFFFFFFFFFFFFFFn) {
+			throw new RangeError(`uint64 out of range: ${value}`);
+		}
+		return this.append(8, serializeUint64, value);
+	}
+
+	/**
+	 * Append a 64-bit unsigned little endian integer.
+	 */
+	public uint64le(value: bigint): this {
+		if (value > 0xFFFFFFFFFFFFFFFFn) {
+			throw new RangeError(`uint64 out of range: ${value}`);
+		}
+		return this.append(8, serializeUint64le, value);
+	}
+
+	/**
+	 * Append a 32-bit IEEE 754 big endian floating point.
+	 */
+	public float32(value: number): this {
+		return this.append(4, serializeFloat32, value);
+	}
+
+	/**
+	 * Append a 32-bit IEEE 754 little endian floating point.
+	 */
+	public float32le(value: number): this {
+		return this.append(4, serializeFloat32le, value);
+	}
+
+	/**
+	 * Append a 64-bit IEEE 754 big endian floating point.
+	 */
+	public float64(value: number): this {
+		return this.append(8, serializeFloat64, value);
+	}
+
+	/**
+	 * Append a 64-bit IEEE 754 little endian floating point.
+	 */
+	public float64le(value: number): this {
+		return this.append(8, serializeFloat64le, value);
 	}
 
 	/**
@@ -218,8 +286,40 @@ function serializeUint16(ctx: Serializer.SerializeContext, value: number): void 
 	ctx.view.setUint16(ctx.byteOffset, value, false);
 }
 
+function serializeUint16le(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setUint16(ctx.byteOffset, value, true);
+}
+
 function serializeUint32(ctx: Serializer.SerializeContext, value: number): void {
 	ctx.view.setUint32(ctx.byteOffset, value, false);
+}
+
+function serializeUint32le(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setUint32(ctx.byteOffset, value, true);
+}
+
+function serializeUint64(ctx: Serializer.SerializeContext, value: bigint): void {
+	ctx.view.setBigUint64(ctx.byteOffset, value, false);
+}
+
+function serializeUint64le(ctx: Serializer.SerializeContext, value: bigint): void {
+	ctx.view.setBigUint64(ctx.byteOffset, value, true);
+}
+
+function serializeFloat32(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setFloat32(ctx.byteOffset, value, false);
+}
+
+function serializeFloat32le(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setFloat32(ctx.byteOffset, value, true);
+}
+
+function serializeFloat64(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setFloat64(ctx.byteOffset, value, false);
+}
+
+function serializeFloat64le(ctx: Serializer.SerializeContext, value: number): void {
+	ctx.view.setFloat64(ctx.byteOffset, value, true);
 }
 
 function serializeByteArray(ctx: Serializer.SerializeContext, value: Uint8Array): void {

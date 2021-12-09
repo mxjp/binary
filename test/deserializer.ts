@@ -113,8 +113,40 @@ function deserialize<T>(t: ExecutionContext, data: Binary, deserialize: (deseria
 (deserialize as CbMacro<any>).title = title => `deserialize: ${title}`;
 
 test(Deserializer.prototype.uint8.name, deserialize, binary`01`, d => d.uint8(), 0x01);
+
 test(Deserializer.prototype.uint16.name, deserialize, binary`0102`, d => d.uint16(), 0x0102);
+test(Deserializer.prototype.uint16le.name, deserialize, binary`0102`.reverse, d => d.uint16le(), 0x0102);
+
 test(Deserializer.prototype.uint32.name, deserialize, binary`01020304`, d => d.uint32(), 0x01020304);
+test(Deserializer.prototype.uint32le.name, deserialize, binary`01020304`.reverse, d => d.uint32le(), 0x01020304);
+
+test(Deserializer.prototype.uint64.name, deserialize, binary`0102030405060708`, d => d.uint64(), 0x0102030405060708n);
+test(Deserializer.prototype.uint64le.name, deserialize, binary`0102030405060708`.reverse, d => d.uint64le(), 0x0102030405060708n);
+
+test(`${Deserializer.prototype.float32.name} (0)`, deserialize, binary`00000000`, d => d.float32(), 0);
+test(`${Deserializer.prototype.float32.name} (-42.7)`, deserialize, binary`c22acccd`, d => d.float32(), -42.70000076293945);
+test(`${Deserializer.prototype.float32.name} (NaN)`, deserialize, binary`7fc00000`, d => d.float32(), NaN);
+test(`${Deserializer.prototype.float32.name} (Infinity)`, deserialize, binary`7f800000`, d => d.float32(), Infinity);
+test(`${Deserializer.prototype.float32.name} (-Infinity)`, deserialize, binary`ff800000`, d => d.float32(), -Infinity);
+
+test(`${Deserializer.prototype.float32le.name} (0)`, deserialize, binary`00000000`.reverse, d => d.float32le(), 0);
+test(`${Deserializer.prototype.float32le.name} (-42.7)`, deserialize, binary`c22acccd`.reverse, d => d.float32le(), -42.70000076293945);
+test(`${Deserializer.prototype.float32le.name} (NaN)`, deserialize, binary`7fc00000`.reverse, d => d.float32le(), NaN);
+test(`${Deserializer.prototype.float32le.name} (Infinity)`, deserialize, binary`7f800000`.reverse, d => d.float32le(), Infinity);
+test(`${Deserializer.prototype.float32le.name} (-Infinity)`, deserialize, binary`ff800000`.reverse, d => d.float32le(), -Infinity);
+
+test(`${Deserializer.prototype.float64.name} (0)`, deserialize, binary`0000000000000000`, d => d.float64(), 0);
+test(`${Deserializer.prototype.float64.name} (-42.7)`, deserialize, binary`c04559999999999a`, d => d.float64(), -42.7);
+test(`${Deserializer.prototype.float64.name} (NaN)`, deserialize, binary`7ff80000000000000`, d => d.float64(), NaN);
+test(`${Deserializer.prototype.float64.name} (Infinity)`, deserialize, binary`7ff00000000000000`, d => d.float64(), Infinity);
+test(`${Deserializer.prototype.float64.name} (-Infinity)`, deserialize, binary`fff00000000000000`, d => d.float64(), -Infinity);
+
+test(`${Deserializer.prototype.float64le.name} (0)`, deserialize, binary`0000000000000000`.reverse, d => d.float64le(), 0);
+test(`${Deserializer.prototype.float64le.name} (-42.7)`, deserialize, binary`c04559999999999a`.reverse, d => d.float64le(), -42.7);
+test(`${Deserializer.prototype.float64le.name} (NaN)`, deserialize, binary`7ff80000000000000`.reverse, d => d.float64le(), NaN);
+test(`${Deserializer.prototype.float64le.name} (Infinity)`, deserialize, binary`7ff00000000000000`.reverse, d => d.float64le(), Infinity);
+test(`${Deserializer.prototype.float64le.name} (-Infinity)`, deserialize, binary`fff00000000000000`.reverse, d => d.float64le(), -Infinity);
+
 test(Deserializer.prototype.array.name, deserialize, binary`0102`, d => d.array(2), binary`0102`.array);
 test(Deserializer.prototype.view.name, deserialize, binary`0102`, d => d.view(2), binary`0102`.view);
 test(Deserializer.prototype.slice.name, deserialize, binary`0102`, d => d.slice(2), binary`0102`.buffer);

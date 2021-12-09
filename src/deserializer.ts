@@ -149,10 +149,66 @@ export class Deserializer {
 	}
 
 	/**
+	 * Read a 16-bit unsigned little endian integer.
+	 */
+	public uint16le(): number {
+		return this.#view.getUint16(this.#mark(2), true);
+	}
+
+	/**
 	 * Read a 32-bit unsigned big endian integer.
 	 */
 	public uint32(): number {
 		return this.#view.getUint32(this.#mark(4), false);
+	}
+
+	/**
+	 * Read a 32-bit unsigned little endian integer.
+	 */
+	public uint32le(): number {
+		return this.#view.getUint32(this.#mark(4), true);
+	}
+
+	/**
+	 * Read a 64-bit unsigned big endian integer.
+	 */
+	public uint64(): bigint {
+		return this.#view.getBigUint64(this.#mark(8), false);
+	}
+
+	/**
+	 * Read a 64-bit unsigned little endian integer.
+	 */
+	public uint64le(): bigint {
+		return this.#view.getBigUint64(this.#mark(8), true);
+	}
+
+	/**
+	 * Read a 32-bit IEEE 754 big endian floating point.
+	 */
+	public float32(): number {
+		return this.#view.getFloat32(this.#mark(4), false);
+	}
+
+	/**
+	 * Read a 32-bit IEEE 754 big endian floating point.
+	 */
+	public float32le(): number {
+		return this.#view.getFloat32(this.#mark(4), true);
+	}
+
+	/**
+	 * Read a 64-bit IEEE 754 big endian floating point.
+	 */
+	public float64(): number {
+		return this.#view.getFloat64(this.#mark(8), false);
+	}
+
+	/**
+	 * Read a 64-bit IEEE 754 little endian floating point.
+	 */
+	public float64le(): number {
+		return this.#view.getFloat64(this.#mark(8), true);
 	}
 
 	/**
