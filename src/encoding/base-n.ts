@@ -21,7 +21,14 @@ export class BaseNAlphabet {
 	}
 }
 
+/**
+ * Base62 alphabet with the following characters: `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+ */
 export const BASE62 = new BaseNAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+/**
+ * Base58 alphabet with the following characters: `123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz`
+ */
 export const BASE58 = new BaseNAlphabet("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
 
 /**

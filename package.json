@@ -36,6 +36,10 @@
 		"binary",
 		"hex",
 		"serialize",
-		"deserialize"
+		"deserialize",
+		"base64",
+		"base64url",
+		"base62",
+		"base58"
 	]
 }
