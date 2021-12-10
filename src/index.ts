@@ -1,3 +1,4 @@
+export * from "./encoding/base64";
 export * from "./encoding/hex";
 export * from "./bytes";
 export * from "./deserializer";
