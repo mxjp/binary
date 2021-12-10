@@ -4,7 +4,17 @@ export class BaseNAlphabet {
 	public readonly base: bigint;
 	public readonly values: Uint16Array;
 
-	public constructor(public readonly chars: string) {
+	/**
+	 * Create a new base-n alphabet.
+	 *
+	 * @param chars The ascii characters to use.
+	 * @param allowBinary True to allow creating binary based alphabets. Default is false.
+	 */
+	public constructor(public readonly chars: string, allowBinary = false) {
+		if (!allowBinary && Number.isInteger(Math.log2(chars.length))) {
+			throw new Error("binary based alphabets should not be used.");
+		}
+
 		this.base = BigInt(chars.length);
 		this.values = new Uint16Array(256);
 		for (let i = 0; i < chars.length; i++) {
@@ -20,6 +30,8 @@ export class BaseNAlphabet {
 		}
 	}
 }
+
+const BYTE_LIMIT = 256;
 
 /**
  * Base62 alphabet with the following characters: `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
@@ -39,8 +51,9 @@ export const BASE58 = new BaseNAlphabet("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdef
  * @param value The bytes to encode.
  * @param alphabet The alphabet to use.
  * @param padding True to include padding, so that trailing zeros are also included in the output. This is required to correctly decode the raw data. Default is true.
+ * @param byteLimit The maximum number of bytes to encode. If this is exceeded, a `RangeError` is thrown. For bigints, the byte size is approximated, for numbers this parameter is ignored. Default is 256 bytes.
  */
-export function encodeBaseN(value: Bytes | number | bigint, alphabet: BaseNAlphabet, padding = true): string {
+export function encodeBaseN(value: Bytes | number | bigint, alphabet: BaseNAlphabet, padding = true, byteLimit = BYTE_LIMIT): string {
 	let base2 = 0n;
 	let bytes: DataView | null = null;
 	if (typeof value === "number") {
@@ -52,9 +65,15 @@ export function encodeBaseN(value: Bytes | number | bigint, alphabet: BaseNAlpha
 		if (value < 0n) {
 			throw new TypeError("value must be a positive integer");
 		}
+		if (Math.log2(Number(value)) / 8 > byteLimit) {
+			throw new RangeError("value exceeds byte limit");
+		}
 		base2 = value;
 	} else {
 		bytes = asDataView(value);
+		if (bytes.byteLength > byteLimit) {
+			throw new RangeError("value exceeds byte limit");
+		}
 		const margin64 = bytes.byteLength - 8;
 		for (let i = 0;;) {
 			if (i <= margin64) {
@@ -102,9 +121,14 @@ export function encodeBaseN(value: Bytes | number | bigint, alphabet: BaseNAlpha
  *
  * @param value The text to decode.
  * @param alphabet The alphabet to use.
+ * @param byteLimit The maximum number of bytes to decode. If this is exceeded, a `RangeError` is thrown. Default is 256 bytes.
  */
-export function decodeBaseN(value: string, alphabet: BaseNAlphabet): Uint8Array {
+export function decodeBaseN(value: string, alphabet: BaseNAlphabet, byteLimit = BYTE_LIMIT): Uint8Array {
 	const byteLength = Math.floor(Math.ceil(value.length * Math.log2(alphabet.chars.length)) / 8);
+	if (byteLength > byteLimit) {
+		throw new RangeError("value exceeds byte limit");
+	}
+
 	const bytes = new Uint8Array(byteLength);
 	let base2 = 0n;
 	for (let i = 0; i < value.length; i++) {

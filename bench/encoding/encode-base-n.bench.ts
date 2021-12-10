@@ -15,7 +15,7 @@ export default function (suite: Suite) {
 			BASE62,
 		]) {
 			suite.add(`${length} bytes (base${alphabet.chars.length})`, () => {
-				encodeBaseN(data, alphabet);
+				encodeBaseN(data, alphabet, undefined, 500);
 			});
 		}
 	}

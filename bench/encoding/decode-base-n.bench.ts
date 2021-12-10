@@ -13,9 +13,9 @@ export default function (suite: Suite) {
 			BASE58,
 			BASE62,
 		]) {
-			const encoded = encodeBaseN(data, alphabet);
+			const encoded = encodeBaseN(data, alphabet, undefined, 500);
 			suite.add(`${length} bytes (base${alphabet.chars.length})`, () => {
-				decodeBaseN(encoded, alphabet);
+				decodeBaseN(encoded, alphabet, 500);
 			});
 		}
 	}
