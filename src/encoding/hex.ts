@@ -1,8 +1,6 @@
 import { asUint8Array, Bytes } from "../bytes";
 import { getSyncSharedBuffer } from "../shared-buffers";
-
-const TEXT_DECODER = new TextDecoder("ascii");
-const TEXT_ENCODER = new TextEncoder();
+import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders";
 
 const BYTE_TO_HEX_ASCII_L = new Uint16Array(256);
 const BYTE_TO_HEX_ASCII_U = new Uint16Array(256);

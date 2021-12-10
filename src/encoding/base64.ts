@@ -1,8 +1,6 @@
 import { asUint8Array, Bytes } from "..";
 import { getSyncSharedBuffer } from "../shared-buffers";
-
-const TEXT_DECODER = new TextDecoder("ascii");
-const TEXT_ENCODER = new TextEncoder();
+import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders";
 
 const BASE64_TO_ASCII = new Uint8Array(64);
 const BASE64URL_TO_ASCII = new Uint8Array(64);
