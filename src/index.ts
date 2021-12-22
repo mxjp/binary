@@ -1,4 +1,3 @@
-export * from "./encoding/base-n";
 export * from "./encoding/base64";
 export * from "./encoding/hex";
 export * from "./bytes";

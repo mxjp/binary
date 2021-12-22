@@ -21,6 +21,15 @@ export function asDataView(bytes: Bytes): DataView {
 }
 
 /**
+ * Create a copy of the specified bytes.
+ */
+export function copyBytes(bytes: Bytes): ArrayBuffer {
+	return bytes instanceof Uint8Array
+		? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+		: bytes.slice(0);
+}
+
+/**
  * Test if two byte arrays are equal.
  *
  * @returns True if the specified arrays are equal.

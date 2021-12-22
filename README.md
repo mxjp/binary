@@ -56,10 +56,6 @@ Supported encodings:
 + hex
 + base64
 + base64url
-+ base-n encoding with predefined alphabets:
-    + base62 (0-9, A-Z, a-z)
-    + base58 (1-9, A-H, J-N, P-Z, a-k, m-z)
-    + any other custom alphabet.
 
 ### Memory Usage
 Some encoders/decoders use text encoders to create strings. To avoid frequent memory allocations, a shared buffer can be set up that is used internally by all encoders/decoders in this library when possible:
