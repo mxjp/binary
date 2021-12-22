@@ -1,6 +1,6 @@
 {
 	"name": "@mpt/binary",
-	"version": "1.1.1",
+	"version": "2.0.0",
 	"description": "Utilities for binary data serialization & encoding",
 	"license": "MIT",
 	"author": "Max J. Polster",
@@ -39,8 +39,6 @@
 		"serialize",
 		"deserialize",
 		"base64",
-		"base64url",
-		"base62",
-		"base58"
+		"base64url"
 	]
 }
