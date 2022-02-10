@@ -85,7 +85,7 @@ export class Serializer {
 	/**
 	 * Append a 16-bit unsigned big endian integer.
 	 */
-	 public uint16(value: number): this {
+	public uint16(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
 			throw new RangeError(`uint16 out of range: ${value}`);
 		}
@@ -95,7 +95,7 @@ export class Serializer {
 	/**
 	 * Append a 16-bit unsigned little endian integer.
 	 */
-	 public uint16le(value: number): this {
+	public uint16le(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
 			throw new RangeError(`uint16 out of range: ${value}`);
 		}
