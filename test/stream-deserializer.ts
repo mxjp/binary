@@ -13,15 +13,15 @@ test("basic", async t => {
 
 	const events: unknown[] = [];
 
-	const v1 = await deserializer.deserialize(deserializer => {
-		events.push("v1", deserializer.bytesAvailable);
-		return deserializer.utf8(deserializer.uint8());
+	const v1 = await deserializer.deserialize(d => {
+		events.push("v1", d.bytesAvailable);
+		return d.utf8(d.uint8());
 	});
 	t.is(v1, "foo");
 
-	const v2 = await deserializer.deserialize(deserializer => {
-		events.push("v2", deserializer.bytesAvailable);
-		return deserializer.uint16();
+	const v2 = await deserializer.deserialize(d => {
+		events.push("v2", d.bytesAvailable);
+		return d.uint16();
 	});
 	t.is(v2, 0x203);
 
@@ -46,9 +46,9 @@ test(`${StreamDeserializer.prototype.deserialize.name} (require byte length)`, a
 
 	const events: unknown[] = [];
 
-	const v1 = await deserializer.deserialize(deserializer => {
-		events.push(deserializer.bytesAvailable);
-		return deserializer.uint16();
+	const v1 = await deserializer.deserialize(d => {
+		events.push(d.bytesAvailable);
+		return d.uint16();
 	}, 2);
 	t.is(v1, 0x102);
 
@@ -66,7 +66,7 @@ test(`${StreamDeserializer.prototype.deserialize.name} (end of stream)`, async t
 	const deserializer = new StreamDeserializer(createReadableChunks([
 		binary`01`.array,
 	]));
-	await t.throwsAsync(() => deserializer.deserialize(deserializer => deserializer.uint16()));
+	await t.throwsAsync(() => deserializer.deserialize(d => d.uint16()));
 });
 
 test(`${StreamDeserializer.prototype.deserialize.name} (delayed required byte length)`, async t => {
@@ -79,12 +79,12 @@ test(`${StreamDeserializer.prototype.deserialize.name} (delayed required byte le
 
 	const events: unknown[] = [];
 
-	const v1 = await deserializer.deserialize((deserializer, requireByteLength) => {
-		events.push(deserializer.bytesAvailable);
+	const v1 = await deserializer.deserialize((d, requireByteLength) => {
+		events.push(d.bytesAvailable);
 
-		const prefix = deserializer.uint8();
+		const prefix = d.uint8();
 		requireByteLength(1 + prefix);
-		return deserializer.slice(prefix);
+		return d.slice(prefix);
 	});
 
 	t.deepEqual(v1, binary`040506`.buffer);
@@ -98,7 +98,7 @@ test(`${StreamDeserializer.prototype.releaseLock.name}`, async t => {
 
 	const deserializer = new StreamDeserializer(stream);
 
-	const v1 = await deserializer.deserialize(deserializer => deserializer.uint8());
+	const v1 = await deserializer.deserialize(d => d.uint8());
 	t.is(v1, 0x01);
 
 	t.false(await deserializer.ended());
