@@ -99,3 +99,25 @@ test(`${Serializer.serialize.name} (prefer function)`, t => {
 		},
 	})), binary`42`.buffer);
 });
+
+test(`${Serializer.serialize.name} (instance, existing buffer)`, t => {
+	const s = new Serializer();
+	s.uint8(0x42);
+	const buffer = new ArrayBuffer(3);
+	s.serialize(buffer);
+	t.deepEqual(buffer, binary`42 00 00`.buffer);
+	s.serialize(buffer, 1);
+	t.deepEqual(buffer, binary`42 42 00`.buffer);
+});
+
+test(`${Serializer.serialize.name} (static, existing buffer)`, t => {
+	const obj = (s: Serializer) => {
+		s.uint8(0x42);
+	};
+
+	const buffer = new ArrayBuffer(3);
+	Serializer.serialize(obj, buffer);
+	t.deepEqual(buffer, binary`42 00 00`.buffer);
+	Serializer.serialize(obj, buffer, 1);
+	t.deepEqual(buffer, binary`42 42 00`.buffer);
+});

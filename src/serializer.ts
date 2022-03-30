@@ -56,13 +56,22 @@ export class Serializer {
 	/**
 	 * Serialize all parts into a new array buffer.
 	 */
-	public serialize(): ArrayBuffer {
-		const buffer = new ArrayBuffer(this.#byteLength);
+	public serialize(): ArrayBuffer;
+
+	/**
+	 * Serialize all parts into an existing array buffer.
+	 *
+	 * @param buffer The buffer to serialize into.
+	 * @param byteOffset The offset at which to start serializing data. Default is 0.
+	 */
+	public serialize(buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
+
+	public serialize(buffer: ArrayBuffer = new ArrayBuffer(this.#byteLength), byteOffset = 0): ArrayBuffer {
 		const context = {
 			buffer,
 			array: new Uint8Array(buffer),
 			view: new DataView(buffer),
-			byteOffset: 0,
+			byteOffset,
 		};
 		for (let i = 0; i < this.#parts.length; i++) {
 			const part = this.#parts[i];
@@ -221,14 +230,25 @@ export class Serializer {
 	 *
 	 * @param serializable A serializable object or a function to append parts to a serializer.
 	 */
-	public static serialize(serializable: Serializer.Serializable): ArrayBuffer {
+	public static serialize(serializable: Serializer.Serializable): ArrayBuffer
+
+	/**
+	 * Serialize an object into an existing array buffer.
+	 *
+	 * @param serializable A serializable object or a function to append parts to a serializer.
+	 * @param buffer The buffer to serialize into.
+	 * @param byteOffset The offset at which to start serializing data. Default is 0.
+	 */
+	public static serialize(serializable: Serializer.Serializable, buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer
+
+	public static serialize(serializable: Serializer.Serializable, buffer?: ArrayBuffer, byteOffset?: number): ArrayBuffer {
 		const serializer = new Serializer();
 		if (typeof serializable === "function") {
 			serializable(serializer);
 		} else {
 			serializable.serialize(serializer);
 		}
-		return serializer.serialize();
+		return serializer.serialize(buffer!, byteOffset!);
 	}
 }
 
