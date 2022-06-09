@@ -1,4 +1,4 @@
-import test, { CbMacro, ExecutionContext,  } from "ava";
+import test, { ExecutionContext } from "ava";
 import { Serializer } from "../src";
 import { Binary, binary } from "./_common/binary";
 
@@ -26,15 +26,18 @@ test(`${Serializer.prototype.append.name} / ${Serializer.prototype.serialize.nam
 	t.deepEqual(serializer.serialize(), binary`000042${"foo"}`.buffer);
 });
 
-function serialize(t: ExecutionContext, fn: Serializer.SerializableFn, expected: Binary) {
-	const serializer = new Serializer();
-	serializer.append(1, () => {});
-	fn(serializer);
-	serializer.append(1, () => {});
-	t.deepEqual(serializer.serialize(), binary`00${expected.buffer}00`.buffer);
-}
-
-(serialize as CbMacro<any>).title = title => `serialize: ${title}`;
+const serialize = test.macro({
+	exec(t: ExecutionContext, fn: Serializer.SerializableFn, expected: Binary) {
+		const serializer = new Serializer();
+		serializer.append(1, () => {});
+		fn(serializer);
+		serializer.append(1, () => {});
+		t.deepEqual(serializer.serialize(), binary`00${expected.buffer}00`.buffer);
+	},
+	title(title) {
+		return `serialize: ${title}`;
+	}
+});
 
 test(Serializer.prototype.uint8.name, serialize, s => s.uint8(0x42), binary`42`);
 

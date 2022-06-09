@@ -1,4 +1,4 @@
-import test, { CbMacro, ExecutionContext } from "ava";
+import test, { ExecutionContext } from "ava";
 import { Deserializer } from "../src";
 import { Binary, binary } from "./_common/binary";
 
@@ -103,14 +103,17 @@ test("checkpoint", t => {
 	t.is(deserializer.uint8(), 0x02);
 });
 
-function deserialize<T>(t: ExecutionContext, data: Binary, deserialize: (deserializer: Deserializer) => T, expected: T) {
-	const deserializer = new Deserializer(binary`00${data.buffer}00`.buffer);
-	deserializer.uint8();
-	t.deepEqual(deserialize(deserializer), expected);
-	t.is(deserializer.bytesAvailable, 1);
-}
-
-(deserialize as CbMacro<any>).title = title => `deserialize: ${title}`;
+const deserialize = test.macro({
+	exec<T>(t: ExecutionContext, data: Binary, deserialize: (deserializer: Deserializer) => T, expected: T) {
+		const deserializer = new Deserializer(binary`00${data.buffer}00`.buffer);
+		deserializer.uint8();
+		t.deepEqual(deserialize(deserializer), expected);
+		t.is(deserializer.bytesAvailable, 1);
+	},
+	title(title) {
+		return `deserialize: ${title}`;
+	}
+});
 
 test(Deserializer.prototype.uint8.name, deserialize, binary`01`, d => d.uint8(), 0x01);
 
