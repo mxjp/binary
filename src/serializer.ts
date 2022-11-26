@@ -1,4 +1,4 @@
-import { asUint8Array, Bytes } from "./bytes";
+import { asUint8Array, Bytes } from "./bytes.js";
 
 /**
  * Utility for serializing binary data.
@@ -7,7 +7,7 @@ export class Serializer {
 	/**
 	 * The default text encoded used for UTF-8.
 	 */
-	public static readonly UTF8 = new TextEncoder();
+	static readonly UTF8 = new TextEncoder();
 
 	/**
 	 * The byte length of all parts combined
@@ -22,7 +22,7 @@ export class Serializer {
 	/**
 	 * Get the current byte length of all parts that have been appended to this serializer.
 	 */
-	public get byteLength() {
+	get byteLength(): number {
 		return this.#byteLength;
 	}
 
@@ -32,7 +32,7 @@ export class Serializer {
 	 * @param byteLength The byte length of the part.
 	 * @param serialize A function to serialize the value.
 	 */
-	public append(byteLength: number, serialize: Serializer.SerializeFn<void>): this;
+	append(byteLength: number, serialize: Serializer.SerializeFn<void>): this;
 
 	/**
 	 * Append a part to serialize.
@@ -41,13 +41,13 @@ export class Serializer {
 	 * @param serialize A function to serialize the value.
 	 * @param value The value to serialize.
 	 */
-	public append<T>(byteLength: number, serialize: Serializer.SerializeFn<T>, value: T): this;
+	append<T>(byteLength: number, serialize: Serializer.SerializeFn<T>, value: T): this;
 
-	public append(byteLength: number, serialize: Serializer.SerializeFn<any>, value?: any): this {
+	append<T>(byteLength: number, serialize: Serializer.SerializeFn<T>, value?: T): this {
 		this.#byteLength += byteLength;
 		this.#parts.push({
 			byteLength,
-			serialize: serialize,
+			serialize: serialize as Serializer.SerializeFn<unknown>,
 			value,
 		});
 		return this;
@@ -56,7 +56,7 @@ export class Serializer {
 	/**
 	 * Serialize all parts into a new array buffer.
 	 */
-	public serialize(): ArrayBuffer;
+	serialize(): ArrayBuffer;
 
 	/**
 	 * Serialize all parts into an existing array buffer.
@@ -64,9 +64,9 @@ export class Serializer {
 	 * @param buffer The buffer to serialize into.
 	 * @param byteOffset The offset at which to start serializing data. Default is 0.
 	 */
-	public serialize(buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
+	serialize(buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
 
-	public serialize(buffer: ArrayBuffer = new ArrayBuffer(this.#byteLength), byteOffset = 0): ArrayBuffer {
+	serialize(buffer: ArrayBuffer = new ArrayBuffer(this.#byteLength), byteOffset = 0): ArrayBuffer {
 		const context = {
 			buffer,
 			array: new Uint8Array(buffer),
@@ -84,7 +84,7 @@ export class Serializer {
 	/**
 	 * Append an 8-bit unsigned integer.
 	 */
-	public uint8(value: number): this {
+	uint8(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFF) {
 			throw new RangeError(`uint8 out of range: ${value}`);
 		}
@@ -94,7 +94,7 @@ export class Serializer {
 	/**
 	 * Append a 16-bit unsigned big endian integer.
 	 */
-	public uint16(value: number): this {
+	uint16(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
 			throw new RangeError(`uint16 out of range: ${value}`);
 		}
@@ -104,7 +104,7 @@ export class Serializer {
 	/**
 	 * Append a 16-bit unsigned little endian integer.
 	 */
-	public uint16le(value: number): this {
+	uint16le(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFF) {
 			throw new RangeError(`uint16 out of range: ${value}`);
 		}
@@ -114,7 +114,7 @@ export class Serializer {
 	/**
 	 * Append a 32-bit unsigned big endian integer.
 	 */
-	public uint32(value: number): this {
+	uint32(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFFFFFF) {
 			throw new RangeError(`uint32 out of range: ${value}`);
 		}
@@ -124,7 +124,7 @@ export class Serializer {
 	/**
 	 * Append a 32-bit unsigned little endian integer.
 	 */
-	public uint32le(value: number): this {
+	uint32le(value: number): this {
 		if (!Number.isInteger(value) || value < 0 || value > 0xFFFFFFFF) {
 			throw new RangeError(`uint32 out of range: ${value}`);
 		}
@@ -134,7 +134,7 @@ export class Serializer {
 	/**
 	 * Append a 64-bit unsigned big endian integer.
 	 */
-	public uint64(value: bigint): this {
+	uint64(value: bigint): this {
 		if (value > 0xFFFFFFFFFFFFFFFFn) {
 			throw new RangeError(`uint64 out of range: ${value}`);
 		}
@@ -144,7 +144,7 @@ export class Serializer {
 	/**
 	 * Append a 64-bit unsigned little endian integer.
 	 */
-	public uint64le(value: bigint): this {
+	uint64le(value: bigint): this {
 		if (value > 0xFFFFFFFFFFFFFFFFn) {
 			throw new RangeError(`uint64 out of range: ${value}`);
 		}
@@ -154,28 +154,28 @@ export class Serializer {
 	/**
 	 * Append a 32-bit IEEE 754 big endian floating point.
 	 */
-	public float32(value: number): this {
+	float32(value: number): this {
 		return this.append(4, serializeFloat32, value);
 	}
 
 	/**
 	 * Append a 32-bit IEEE 754 little endian floating point.
 	 */
-	public float32le(value: number): this {
+	float32le(value: number): this {
 		return this.append(4, serializeFloat32le, value);
 	}
 
 	/**
 	 * Append a 64-bit IEEE 754 big endian floating point.
 	 */
-	public float64(value: number): this {
+	float64(value: number): this {
 		return this.append(8, serializeFloat64, value);
 	}
 
 	/**
 	 * Append a 64-bit IEEE 754 little endian floating point.
 	 */
-	public float64le(value: number): this {
+	float64le(value: number): this {
 		return this.append(8, serializeFloat64le, value);
 	}
 
@@ -185,7 +185,7 @@ export class Serializer {
 	 * @param bytes The bytes to append.
 	 * @param expectedByteLength If specified and the byte length does not match, an error is thrown.
 	 */
-	public bytes(bytes: Bytes, expectedByteLength?: number): this {
+	bytes(bytes: Bytes, expectedByteLength?: number): this {
 		const array = asUint8Array(bytes);
 		if (expectedByteLength !== undefined && array.byteLength !== expectedByteLength) {
 			throw new RangeError(`unexpected byte length: ${array.byteLength} (expected ${expectedByteLength})`);
@@ -199,7 +199,7 @@ export class Serializer {
 	 * @param value The text to append.
 	 * @param expectedByteLength If specified and the byte length does not match, an error is thrown.
 	 */
-	public utf8(value: string, expectedByteLength?: number): this {
+	utf8(value: string, expectedByteLength?: number): this {
 		return this.bytes(Serializer.UTF8.encode(value), expectedByteLength);
 	}
 
@@ -209,7 +209,7 @@ export class Serializer {
 	 * @param prefix A function to append the byte length before the bytes.
 	 * @param bytes The bytes to append.
 	 */
-	public prefixedBytes(prefix: Serializer.PrefixFn, bytes: Bytes): this {
+	prefixedBytes(prefix: Serializer.PrefixFn, bytes: Bytes): this {
 		const array = asUint8Array(bytes);
 		prefix.call(this, array.byteLength);
 		return this.append(array.byteLength, serializeByteArray, array);
@@ -221,7 +221,7 @@ export class Serializer {
 	 * @param prefix A function to append the byte length before the text.
 	 * @param value The text to append.
 	 */
-	public prefixedUTF8(prefix: Serializer.PrefixFn, value: string): this {
+	prefixedUTF8(prefix: Serializer.PrefixFn, value: string): this {
 		return this.prefixedBytes(prefix, Serializer.UTF8.encode(value));
 	}
 
@@ -230,7 +230,7 @@ export class Serializer {
 	 *
 	 * @param serializable A serializable object or a function to append parts to a serializer.
 	 */
-	public static serialize(serializable: Serializer.Serializable): ArrayBuffer
+	static serialize(serializable: Serializer.Serializable): ArrayBuffer;
 
 	/**
 	 * Serialize an object into an existing array buffer.
@@ -239,9 +239,9 @@ export class Serializer {
 	 * @param buffer The buffer to serialize into.
 	 * @param byteOffset The offset at which to start serializing data. Default is 0.
 	 */
-	public static serialize(serializable: Serializer.Serializable, buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer
+	static serialize(serializable: Serializer.Serializable, buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
 
-	public static serialize(serializable: Serializer.Serializable, buffer?: ArrayBuffer, byteOffset?: number): ArrayBuffer {
+	static serialize(serializable: Serializer.Serializable, buffer?: ArrayBuffer, byteOffset?: number): ArrayBuffer {
 		const serializer = new Serializer();
 		if (typeof serializable === "function") {
 			serializable(serializer);
@@ -294,7 +294,7 @@ export declare namespace Serializer {
 
 interface Part {
 	readonly byteLength: number;
-	readonly serialize: Serializer.SerializeFn<any>;
+	readonly serialize: Serializer.SerializeFn<unknown>;
 	readonly value: unknown;
 }
 

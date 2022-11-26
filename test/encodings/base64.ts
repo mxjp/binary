@@ -1,7 +1,8 @@
 import test from "ava";
-import { decodeBase64, decodeBase64URL, encodeBase64, encodeBase64URL } from "../../src/encoding/base64";
-import { binary } from "../_common/binary";
-import { getPseudoRandomBytes } from "../_common/random-bytes";
+
+import { decodeBase64, decodeBase64URL, encodeBase64, encodeBase64URL } from "../../src/index.js";
+import { binary } from "../_common/binary.js";
+import { getPseudoRandomBytes } from "../_common/random-bytes.js";
 
 test(`${encodeBase64.name}, ${encodeBase64URL.name}`, t => {
 	for (const data of [
@@ -39,7 +40,7 @@ test(`${decodeBase64.name}, ${decodeBase64URL.name}`, t => {
 		t.deepEqual(decodeBase64(Buffer.from(data).toString("base64") + "==="), data);
 		t.deepEqual(decodeBase64(Buffer.from(data).toString("base64") + "===="), data);
 		t.deepEqual(decodeBase64URL(Buffer.from(data).toString("base64url")), data);
-		t.deepEqual(decodeBase64(Buffer.from(data).toString("base64").replace(/\=/g, "")), data);
+		t.deepEqual(decodeBase64(Buffer.from(data).toString("base64").replace(/[=]/g, "")), data);
 	}
 
 	for (const invalid of [

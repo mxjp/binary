@@ -6,6 +6,6 @@ export function createReadableChunks(chunks: Uint8Array[]): ReadableStream<Uint8
 				controller.enqueue(chunks[i]);
 			}
 			controller.close();
-		}
+		},
 	});
 }

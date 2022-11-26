@@ -1,6 +1,7 @@
 import test, { ExecutionContext } from "ava";
-import { Serializer } from "../src";
-import { Binary, binary } from "./_common/binary";
+
+import { Serializer } from "../src/index.js";
+import { Binary, binary } from "./_common/binary.js";
 
 test(`${Serializer.prototype.append.name} / ${Serializer.prototype.serialize.name}`, t => {
 	const serializer = new Serializer();
@@ -36,7 +37,7 @@ const serialize = test.macro({
 	},
 	title(title) {
 		return `serialize: ${title}`;
-	}
+	},
 });
 
 test(Serializer.prototype.uint8.name, serialize, s => s.uint8(0x42), binary`42`);

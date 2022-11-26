@@ -1,8 +1,9 @@
 import { Suite } from "benchmark";
-import { decodeBase64 } from "../../src/encoding/base64";
-import { getPseudoRandomBytes } from "../../test/_common/random-bytes";
 
-export default function (suite: Suite) {
+import { decodeBase64 } from "../../src/index.js";
+import { getPseudoRandomBytes } from "../../test/_common/random-bytes.js";
+
+export default function (suite: Suite): void {
 	for (const length of [
 		100,
 		1000,

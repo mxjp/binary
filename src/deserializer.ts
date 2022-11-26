@@ -1,4 +1,4 @@
-import { Bytes } from "./bytes";
+import { Bytes } from "./bytes.js";
 
 /**
  * Utility for deserializing binary data.
@@ -7,7 +7,7 @@ export class Deserializer {
 	/**
 	 * The default text decoder used for UTF-8.
 	 */
-	public static readonly UTF8 = new TextDecoder("utf-8", { fatal: true });
+	static readonly UTF8 = new TextDecoder("utf-8", { fatal: true });
 
 	/**
 	 * The underlying buffer to read from.
@@ -36,7 +36,7 @@ export class Deserializer {
 	 * @param byteOffset The byte offset from where to read.
 	 * @param byteLength The byte length that is available for reading.
 	 */
-	public constructor(data: Bytes, byteOffset?: number, byteLength?: number) {
+	constructor(data: Bytes, byteOffset?: number, byteLength?: number) {
 		if (data instanceof ArrayBuffer) {
 			this.#buffer = data;
 			this.#byteOffset = byteOffset ?? 0;
@@ -58,28 +58,28 @@ export class Deserializer {
 	/**
 	 * The underlying array buffer.
 	 */
-	public get buffer() {
+	get buffer(): ArrayBuffer {
 		return this.#buffer;
 	}
 
 	/**
 	 * The current byte offset.
 	 */
-	public get byteOffset(): number {
+	get byteOffset(): number {
 		return this.#byteOffset;
 	}
 
 	/**
 	 * The current number of bytes available to deserialize.
 	 */
-	public get bytesAvailable(): number {
+	get bytesAvailable(): number {
 		return this.#endByteOffset - this.#byteOffset;
 	}
 
 	/**
 	 * Replace the underlying buffer with the current remaining data concatenated with the specified chunks.
 	 */
-	public push(chunks: Uint8Array[], chunksByteLength?: number) {
+	push(chunks: Uint8Array[], chunksByteLength?: number): void {
 		const oldByteLength = this.bytesAvailable;
 		let newByteLength = oldByteLength;
 		if (chunksByteLength === undefined) {
@@ -110,7 +110,7 @@ export class Deserializer {
 	 * Create a checkpoint at the current byte offset that can be restored
 	 * as long as the underlying buffer has not been replaced.
 	 */
-	public checkpoint(): Deserializer.RestoreCheckpointFn {
+	checkpoint(): Deserializer.RestoreCheckpointFn {
 		const buffer = this.#buffer;
 		const byteOffset = this.#byteOffset;
 		return () => {
@@ -137,98 +137,98 @@ export class Deserializer {
 	/**
 	 * Read an 8-bit unsigned integer.
 	 */
-	public uint8(): number {
+	uint8(): number {
 		return this.#view.getUint8(this.#mark(1));
 	}
 
 	/**
 	 * Read a 16-bit unsigned big endian integer.
 	 */
-	public uint16(): number {
+	uint16(): number {
 		return this.#view.getUint16(this.#mark(2), false);
 	}
 
 	/**
 	 * Read a 16-bit unsigned little endian integer.
 	 */
-	public uint16le(): number {
+	uint16le(): number {
 		return this.#view.getUint16(this.#mark(2), true);
 	}
 
 	/**
 	 * Read a 32-bit unsigned big endian integer.
 	 */
-	public uint32(): number {
+	uint32(): number {
 		return this.#view.getUint32(this.#mark(4), false);
 	}
 
 	/**
 	 * Read a 32-bit unsigned little endian integer.
 	 */
-	public uint32le(): number {
+	uint32le(): number {
 		return this.#view.getUint32(this.#mark(4), true);
 	}
 
 	/**
 	 * Read a 64-bit unsigned big endian integer.
 	 */
-	public uint64(): bigint {
+	uint64(): bigint {
 		return this.#view.getBigUint64(this.#mark(8), false);
 	}
 
 	/**
 	 * Read a 64-bit unsigned little endian integer.
 	 */
-	public uint64le(): bigint {
+	uint64le(): bigint {
 		return this.#view.getBigUint64(this.#mark(8), true);
 	}
 
 	/**
 	 * Read a 32-bit IEEE 754 big endian floating point.
 	 */
-	public float32(): number {
+	float32(): number {
 		return this.#view.getFloat32(this.#mark(4), false);
 	}
 
 	/**
 	 * Read a 32-bit IEEE 754 big endian floating point.
 	 */
-	public float32le(): number {
+	float32le(): number {
 		return this.#view.getFloat32(this.#mark(4), true);
 	}
 
 	/**
 	 * Read a 64-bit IEEE 754 big endian floating point.
 	 */
-	public float64(): number {
+	float64(): number {
 		return this.#view.getFloat64(this.#mark(8), false);
 	}
 
 	/**
 	 * Read a 64-bit IEEE 754 little endian floating point.
 	 */
-	public float64le(): number {
+	float64le(): number {
 		return this.#view.getFloat64(this.#mark(8), true);
 	}
 
 	/**
 	 * Read the next n bytes by creating an Uint8Array that views the underlying buffer.
 	 */
-	public array(byteLength: number): Uint8Array {
+	array(byteLength: number): Uint8Array {
 		return new Uint8Array(this.#buffer, this.#mark(byteLength), byteLength);
 	}
 
 	/**
 	 * Read the next n bytes by creating a DataView that views the underlying buffer.
 	 */
-	public view(byteLength: number): DataView {
+	view(byteLength: number): DataView {
 		return new DataView(this.#buffer, this.#mark(byteLength), byteLength);
 	}
 
 	/**
 	 * Read the next n bytes by copying into a new ArrayBuffer.
 	 */
-	public slice(byteLength: number): ArrayBuffer {
+	slice(byteLength: number): ArrayBuffer {
 		const start = this.#mark(byteLength);
 		return this.#buffer.slice(start, start + byteLength);
 	}
@@ -238,7 +238,7 @@ export class Deserializer {
 	 *
 	 * Note that a `DOMException` is thrown if an encoding error is found.
 	 */
-	public utf8(byteLength: number): string {
+	utf8(byteLength: number): string {
 		return Deserializer.UTF8.decode(this.array(byteLength));
 	}
 }

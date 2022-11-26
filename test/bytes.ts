@@ -1,6 +1,7 @@
 import test from "ava";
-import { asUint8Array, bytesEqual, concatBytes, lexicalCompareBytes } from "../src";
-import { binary } from "./_common/binary";
+
+import { asUint8Array, bytesEqual, concatBytes, lexicalCompareBytes } from "../src/index.js";
+import { binary } from "./_common/binary.js";
 
 test(asUint8Array.name, t => {
 	const test = binary`0123`;

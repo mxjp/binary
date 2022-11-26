@@ -1,6 +1,6 @@
-import { asUint8Array, Bytes } from "../bytes";
-import { getSyncSharedBuffer } from "../shared-buffers";
-import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders";
+import { asUint8Array, Bytes } from "../bytes.js";
+import { getSyncSharedBuffer } from "../shared-buffers.js";
+import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
 const BYTE_TO_HEX_ASCII_L = new Uint16Array(256);
 const BYTE_TO_HEX_ASCII_U = new Uint16Array(256);

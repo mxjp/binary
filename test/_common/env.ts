@@ -1,4 +1,4 @@
-import { ReadableStream, WritableStream } from "stream/web";
+import { ReadableStream, WritableStream } from "node:stream/web";
 
 if (!globalThis.ReadableStream) {
 	globalThis.ReadableStream = ReadableStream as typeof globalThis.ReadableStream;

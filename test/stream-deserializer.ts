@@ -1,7 +1,8 @@
 import test from "ava";
-import { StreamDeserializer } from "../src";
-import { binary } from "./_common/binary";
-import { createReadableChunks } from "./_common/readable-chunks";
+
+import { StreamDeserializer } from "../src/index.js";
+import { binary } from "./_common/binary.js";
+import { createReadableChunks } from "./_common/readable-chunks.js";
 
 test("basic", async t => {
 	const stream = createReadableChunks([
@@ -28,9 +29,12 @@ test("basic", async t => {
 	t.true(await deserializer.ended());
 
 	t.deepEqual(events, [
-		"v1", 1,
-		"v1", 6,
-		"v2", 2,
+		"v1",
+		1,
+		"v1",
+		6,
+		"v2",
+		2,
 	]);
 
 	t.true(stream.locked);

@@ -1,6 +1,6 @@
 import { asUint8Array, Bytes } from "..";
-import { getSyncSharedBuffer } from "../shared-buffers";
-import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders";
+import { getSyncSharedBuffer } from "../shared-buffers.js";
+import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
 const BASE64_TO_ASCII = new Uint8Array(64);
 const BASE64URL_TO_ASCII = new Uint8Array(64);
@@ -28,10 +28,10 @@ function encode(value: Bytes, map: Uint8Array, pad: boolean): string {
 		base64[x++] = map[a >>> 2];
 		if (++i < bytes.byteLength) {
 			const b = bytes[i];
-			base64[x++] = map[((a & 0x3) << 4) | b >>> 4];
+			base64[x++] = map[((a & 0x3) << 4) | (b >>> 4)];
 			if (++i < bytes.byteLength) {
 				const c = bytes[i];
-				base64[x++] = map[((b & 0xf) << 2) | c >>> 6];
+				base64[x++] = map[((b & 0xf) << 2) | (c >>> 6)];
 				base64[x++] = map[c & 0x3f];
 				i++;
 			} else {
@@ -69,7 +69,7 @@ function decode(value: string, map: Uint16Array): Uint8Array {
 	if (partial === 1) {
 		throw new TypeError("invalid data");
 	}
-	const byteLength = (base64Length >>> 2) * 3 + (partial >>> 1) + (partial & 0x1);
+	const byteLength = ((base64Length >>> 2) * 3) + (partial >>> 1) + (partial & 0x1);
 	const bytes = new Uint8Array(byteLength);
 	for (let i = 0, x = 0; i < byteLength;) {
 		const a = map[base64[x++]];

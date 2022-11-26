@@ -1,7 +1,8 @@
 import { Suite } from "benchmark";
-import { Deserializer, Serializer } from "../../src";
 
-export default function (suite: Suite) {
+import { Deserializer, Serializer } from "../../src/index.js";
+
+export default function (suite: Suite): void {
 	const data = Serializer.serialize(s => {
 		s.uint8(42);
 		s.uint16(0x1234);

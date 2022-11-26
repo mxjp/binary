@@ -1,7 +1,9 @@
+import { Readable } from "node:stream";
+
 import test from "ava";
-import { Readable } from "stream";
-import { StreamDeserializer } from "../../src/node";
-import { binary } from "../_common/binary";
+
+import { StreamDeserializer } from "../../src/node/index.js";
+import { binary } from "../_common/binary.js";
 
 test("basic", async t => {
 	const stream = new Readable({ read() {} });

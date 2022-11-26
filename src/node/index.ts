@@ -1,2 +1,2 @@
-export * from "./node-readable-stream";
-export * from "./stream-deserializer";
+export * from "./node-readable-stream.js";
+export * from "./stream-deserializer.js";

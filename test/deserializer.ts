@@ -1,6 +1,7 @@
 import test, { ExecutionContext } from "ava";
-import { Deserializer } from "../src";
-import { Binary, binary } from "./_common/binary";
+
+import { Deserializer } from "../src/index.js";
+import { Binary, binary } from "./_common/binary.js";
 
 test("constructor (buffer, no offset, no length)", t => {
 	const buffer = binary`010203`.buffer;
@@ -112,7 +113,7 @@ const deserialize = test.macro({
 	},
 	title(title) {
 		return `deserialize: ${title}`;
-	}
+	},
 });
 
 test(Deserializer.prototype.uint8.name, deserialize, binary`01`, d => d.uint8(), 0x01);

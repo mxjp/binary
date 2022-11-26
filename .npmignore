@@ -1,6 +1,8 @@
 /.github
 /bench*
 /test*
+/.eslint*
 /.gitignore
 /ava*
 /tsconfig*
+/src

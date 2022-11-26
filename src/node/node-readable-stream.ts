@@ -1,4 +1,4 @@
-import type { Readable } from "stream";
+import type { Readable } from "node:stream";
 
 export function toWebReadableStream(source: Readable): ReadableStream<Uint8Array> {
 	let resolvePull: (() => void) | undefined;
@@ -42,12 +42,12 @@ export function toWebReadableStream(source: Readable): ReadableStream<Uint8Array
 		},
 
 		cancel(reason) {
-			source.destroy(reason);
+			source.destroy(reason as Error);
 		},
 
-		pull(controller) {
+		pull(_controller) {
 			if (!source.readableEnded) {
-				return new Promise((resolve) => {
+				return new Promise<void>(resolve => {
 					resolvePull = resolve;
 					source.resume();
 				});

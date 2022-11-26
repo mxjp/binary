@@ -1,4 +1,4 @@
-import { asUint8Array, Bytes } from "./bytes";
+import { asUint8Array, Bytes } from "./bytes.js";
 
 /**
  * Queue for bytes that can be used as buffer for deserializing data from a readable stream.
@@ -10,14 +10,14 @@ export class ByteQueue {
 	/**
 	 * Get the current number of bytes in this queue.
 	 */
-	public get byteLength() {
+	get byteLength(): number {
 		return this.#byteLength;
 	}
 
 	/**
 	 * Remove all bytes from the queue.
 	 */
-	public clear() {
+	clear(): void {
 		this.#chunks.length = 0;
 		this.#byteLength = 0;
 	}
@@ -28,7 +28,7 @@ export class ByteQueue {
 	 * @param bytes The bytes to enqueue.
 	 * @returns The new byte length of this queue.
 	 */
-	public enqueue(bytes: Bytes): number {
+	enqueue(bytes: Bytes): number {
 		if (bytes.byteLength > 0) {
 			this.#chunks.push(asUint8Array(bytes));
 			this.#byteLength += bytes.byteLength;
@@ -71,7 +71,7 @@ export class ByteQueue {
 	 * @param remove If false, bytes are not dequeued. Default is true.
 	 * @returns The dequeued bytes.
 	 */
-	public dequeue(byteLength: number = this.#byteLength, remove = true): Uint8Array {
+	dequeue(byteLength: number = this.#byteLength, remove = true): Uint8Array {
 		if (byteLength > this.#byteLength) {
 			byteLength = this.#byteLength;
 		}
@@ -89,7 +89,7 @@ export class ByteQueue {
 	 * @param byteLength The maximum number of bytes to dequeue.
 	 * @param remove If false, bytes are not dequeued. Default is true.
 	 */
-	public dequeueInto(bytes: Bytes, byteLength = bytes.byteLength, remove = true): number {
+	dequeueInto(bytes: Bytes, byteLength = bytes.byteLength, remove = true): number {
 		byteLength = Math.min(byteLength, bytes.byteLength, this.#byteLength);
 		if (byteLength > 0) {
 			const array = asUint8Array(bytes);

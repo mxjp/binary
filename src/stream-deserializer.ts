@@ -24,7 +24,7 @@ export class StreamDeserializer {
 	/**
 	 * Create a new stream deserializer for the given readable.
 	 */
-	public constructor(stream: ReadableStream<Uint8Array>) {
+	constructor(stream: ReadableStream<Uint8Array>) {
 		this.#reader = stream.getReader();
 		this.#done = false;
 	}
@@ -45,7 +45,7 @@ export class StreamDeserializer {
 	 * @param deserialize The function to deserialize. If a `RangeError` is thrown and additional data can be read, the deserialization is repeated.
 	 * @param requiredByteLength Number of bytes that must be available before deserializing. If the stream ends before this number of bytes is reached, a `RangeError` is thrown.
 	 */
-	public async deserialize<T>(deserialize: StreamDeserializer.DeserializeFn<T>, requiredByteLength = 0): Promise<T> {
+	async deserialize<T>(deserialize: StreamDeserializer.DeserializeFn<T>, requiredByteLength = 0): Promise<T> {
 		for (;;) {
 			if (this.#deserializer !== null && this.#deserializer.bytesAvailable >= requiredByteLength) {
 				const restoreCheckpoint = this.#deserializer.checkpoint();
@@ -93,7 +93,7 @@ export class StreamDeserializer {
 	 *
 	 * If the underlying stream has not ended yet, a single chunk is read to determine if there is data available.
 	 */
-	public async ended(): Promise<boolean> {
+	async ended(): Promise<boolean> {
 		if (this.#deserializer !== null && this.#deserializer.bytesAvailable > 0) {
 			return false;
 		}
@@ -112,7 +112,7 @@ export class StreamDeserializer {
 	/**
 	 * Cancel the underlying reader.
 	 */
-	public cancel(reason: unknown): Promise<void> {
+	cancel(reason: unknown): Promise<void> {
 		return this.#reader.cancel(reason);
 	}
 
@@ -122,7 +122,7 @@ export class StreamDeserializer {
 	 * @returns The current deserializer if there is any to get access to the data
 	 * that has already be read from the stream.
 	 */
-	public releaseLock(): Deserializer | null {
+	releaseLock(): Deserializer | null {
 		this.#reader.releaseLock();
 		return this.#deserializer;
 	}

@@ -1,6 +1,7 @@
 import test from "ava";
-import { decodeHex, encodeHex } from "../../src";
-import { getPseudoRandomBytes } from "../_common/random-bytes";
+
+import { decodeHex, encodeHex } from "../../src/index.js";
+import { getPseudoRandomBytes } from "../_common/random-bytes.js";
 
 const bytes = new Uint8Array(256);
 let hex = "";

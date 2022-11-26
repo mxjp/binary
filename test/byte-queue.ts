@@ -1,8 +1,9 @@
-import test, { ExecutionContext } from "ava";
-import { ByteQueue } from "../src/byte-queue";
-import { binary } from "./_common/binary";
+import test from "ava";
 
-function createQueue(t: ExecutionContext) {
+import { ByteQueue } from "../src/index.js";
+import { binary } from "./_common/binary.js";
+
+function createQueue() {
 	const queue = new ByteQueue();
 	queue.enqueue(binary`0011`.array);
 	queue.enqueue(binary`223344`.buffer);
@@ -12,7 +13,7 @@ function createQueue(t: ExecutionContext) {
 }
 
 test(`${ByteQueue.prototype.dequeue.name}: no args`, t => {
-	const queue = createQueue(t);
+	const queue = createQueue();
 	t.is(queue.byteLength, 9);
 
 	t.deepEqual(queue.dequeue(), binary`001122334455667788`.array);
@@ -20,7 +21,7 @@ test(`${ByteQueue.prototype.dequeue.name}: no args`, t => {
 });
 
 test(`${ByteQueue.prototype.dequeue.name}: specific byte lengths, no remove`, t => {
-	const queue = createQueue(t);
+	const queue = createQueue();
 	t.deepEqual(queue.dequeue(1), binary`00`.array);
 	t.is(queue.byteLength, 8);
 
@@ -44,7 +45,7 @@ test(`${ByteQueue.prototype.dequeue.name}: specific byte lengths, no remove`, t 
 });
 
 test(ByteQueue.prototype.dequeueInto.name, t => {
-	const queue = createQueue(t);
+	const queue = createQueue();
 
 	const a = new Uint8Array(1);
 	t.is(queue.dequeueInto(a), 1);
@@ -81,7 +82,7 @@ test(ByteQueue.prototype.dequeueInto.name, t => {
 });
 
 test(ByteQueue.prototype.clear.name, t => {
-	const queue = createQueue(t);
+	const queue = createQueue();
 	queue.clear();
 	t.is(queue.byteLength, 0);
 	t.deepEqual(queue.dequeue(), binary``.array);

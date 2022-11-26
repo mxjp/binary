@@ -1,15 +1,17 @@
+import { join } from "node:path";
+
+import colors from "ansi-colors";
 import { Suite } from "benchmark";
 import globby from "globby";
-import { join } from "path";
 import createMatcher from "ignore";
-import colors from "ansi-colors";
-import { setupSyncSharedBuffer } from "../src/shared-buffers";
+
+import { setupSyncSharedBuffer } from "../src/shared-buffers.js";
 
 interface BenchModule {
 	default?: (suite: Suite) => void;
 }
 
-(async () => {
+void (async () => {
 	const matcher = createMatcher();
 	const patterns = process.argv.slice(2);
 	patterns.forEach(pattern => matcher.add(pattern));
@@ -26,14 +28,14 @@ interface BenchModule {
 						onStart() {
 							console.log(colors.green(name));
 						},
-						onCycle(e: Event) {
-							console.log(`  ${e.target}`);
+						onCycle(event: Event) {
+							console.log(`  ${event.target}`);
 						},
 						onComplete() {
 							console.log();
 							resolve();
 						},
-						onError: reject
+						onError: reject,
 					});
 					module.default!(suite);
 					if (suite.length === 0) {
