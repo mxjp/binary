@@ -1,14 +1,15 @@
 import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import colors from "ansi-colors";
-import { Suite } from "benchmark";
+import benchmark from "benchmark";
 import globby from "globby";
 import createMatcher from "ignore";
 
 import { setupSyncSharedBuffer } from "../src/shared-buffers.js";
 
 interface BenchModule {
-	default?: (suite: Suite) => void;
+	default?: (suite: benchmark.Suite) => void;
 }
 
 void (async () => {
@@ -18,13 +19,14 @@ void (async () => {
 
 	setupSyncSharedBuffer(20000);
 
-	for (const filename of await globby("./**/*.bench.js", { cwd: __dirname })) {
+	const dirname = join(fileURLToPath(import.meta.url), "..");
+	for (const filename of await globby("./**/*.bench.js", { cwd: dirname })) {
 		const name = filename.replace(/\\/g, "/").replace(/\.bench\.js$/, "");
 		if (patterns.length === 0 || matcher.ignores(name)) {
-			const module = await import(join(__dirname, filename)) as BenchModule;
+			const module = await import(pathToFileURL(join(dirname, filename)).toString()) as BenchModule;
 			if (typeof module.default === "function") {
 				await new Promise<void>((resolve, reject) => {
-					const suite = new Suite(name, {
+					const suite = new benchmark.Suite(name, {
 						onStart() {
 							console.log(colors.green(name));
 						},

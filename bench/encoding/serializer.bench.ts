@@ -1,4 +1,4 @@
-import { Suite } from "benchmark";
+import type { Suite } from "benchmark";
 
 import { Serializer } from "../../src/index.js";
 

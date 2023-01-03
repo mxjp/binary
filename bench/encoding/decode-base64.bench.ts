@@ -1,4 +1,4 @@
-import { Suite } from "benchmark";
+import type { Suite } from "benchmark";
 
 import { decodeBase64 } from "../../src/index.js";
 import { getPseudoRandomBytes } from "../../test/_common/random-bytes.js";

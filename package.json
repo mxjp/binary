@@ -1,35 +1,21 @@
 {
 	"name": "@mpt/binary",
-	"version": "4.1.0",
+	"version": "5.0.0",
 	"description": "Utilities for binary data serialization & encoding",
 	"license": "MIT",
 	"author": "Max J. Polster",
 	"repository": "https://github.com/mxjp/binary.git",
-	"main": "./dist/cjs/index.js",
-	"module": "./dist/es/index.js",
-	"exports": {
-		".": {
-			"import": "./dist/es/index.js",
-			"require": "./dist/cjs/index.js",
-			"default": "./dist/es/index.js"
-		},
-		"./node": {
-			"import": "./dist/es/node/index.js",
-			"require": "./dist/cjs/node/index.js",
-			"default": "./dist/es/node/index.js"
-		},
-		"./dist/": "./dist/"
-	},
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"scripts": {
 		"clean": "rimraf ./dist/**/* ./test_out/**/* ./bench_out/**/*",
 		"test": "tsc -p tsconfig-test.json && ava -v",
 		"start": "npm run clean && tsc -p tsconfig-test.json && concurrently \"tsc -p tsconfig-test.json -w\" \"ava -v -w\"",
-		"build": "concurrently npm:build:*",
-		"build:es": "tsc -p tsconfig-es.json",
-		"build:cjs": "tsc -p tsconfig-cjs.json",
+		"build": "tsc -p tsconfig-build.json",
 		"lint": "eslint --config .eslintrc.json ./{src,test,bench}/**/*.{ts,tsx}",
 		"bench": "npm run clean && npm run bench:compile && npm run bench:run",
-		"bench:run": "node ./bench_out/bench",
+		"bench:run": "node ./bench_out/bench/index.js",
 		"bench:compile": "tsc -p tsconfig-bench.json",
 		"bench:watch": "tsc -p tsconfig-bench.json -w",
 		"prepack": "npm test && npm run lint && npm run build"

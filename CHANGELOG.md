@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0
++ **Breakig change:** Drop CommonJS support.
+
 ## 4.1
 + Fix package export map.
 
