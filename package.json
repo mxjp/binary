@@ -1,6 +1,6 @@
 {
 	"name": "@mpt/binary",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"description": "Utilities for binary data serialization & encoding",
 	"license": "MIT",
 	"author": "Max J. Polster",
@@ -9,14 +9,14 @@
 	"module": "./dist/es/index.js",
 	"exports": {
 		".": {
-			"module": "./dist/es/index.js",
 			"import": "./dist/es/index.js",
-			"default": "./dist/cjs/index.js"
+			"require": "./dist/cjs/index.js",
+			"default": "./dist/es/index.js"
 		},
 		"./node": {
-			"module": "./dist/es/node/index.js",
 			"import": "./dist/es/node/index.js",
-			"default": "./dist/cjs/node/index.js"
+			"require": "./dist/cjs/node/index.js",
+			"default": "./dist/es/node/index.js"
 		},
 		"./dist/": "./dist/"
 	},

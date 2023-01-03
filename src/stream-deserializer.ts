@@ -1,4 +1,5 @@
-import { concatBytes, Deserializer } from ".";
+import { concatBytes } from "./bytes.js";
+import { Deserializer } from "./deserializer.js";
 
 /**
  * Utility for deserializing binary data from a stream.
