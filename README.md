@@ -56,9 +56,10 @@ Supported encodings:
 + hex
 + base64
 + base64url
++ base32 (encode only)
 
 ### Memory Usage
-Some encoders/decoders use text encoders to create strings. To avoid frequent memory allocations, a shared buffer can be set up that is used internally by all encoders/decoders in this library when possible:
+Some encoders/decoders in this library make use of an internal shared buffer to avoid memory allocations if possible.
 ```ts
-setupSyncSharedBuffer(2048);
+setupSharedBuffer(2048);
 ```

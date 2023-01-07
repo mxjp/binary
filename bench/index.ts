@@ -6,7 +6,7 @@ import benchmark from "benchmark";
 import globby from "globby";
 import createMatcher from "ignore";
 
-import { setupSyncSharedBuffer } from "../src/shared-buffers.js";
+import { setupSharedBuffer } from "../src/shared-buffers.js";
 
 interface BenchModule {
 	default?: (suite: benchmark.Suite) => void;
@@ -17,7 +17,7 @@ void (async () => {
 	const patterns = process.argv.slice(2);
 	patterns.forEach(pattern => matcher.add(pattern));
 
-	setupSyncSharedBuffer(20000);
+	setupSharedBuffer(20000);
 
 	const dirname = join(fileURLToPath(import.meta.url), "..");
 	for (const filename of await globby("./**/*.bench.js", { cwd: dirname })) {

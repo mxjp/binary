@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.1
++ Add optional padding parameter to `encodeBase64`.
++ Add `encodeBase32` function.
++ Export `setupSharedBuffer`.
+
 ## 5.0
 + **Breakig change:** Drop CommonJS support.
 

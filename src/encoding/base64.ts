@@ -1,28 +1,23 @@
 import { asUint8Array, Bytes } from "../bytes.js";
-import { getSyncSharedBuffer } from "../shared-buffers.js";
+import { getSharedBuffer } from "../shared-buffers.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
-const BASE64_TO_ASCII = new Uint8Array(64);
-const BASE64URL_TO_ASCII = new Uint8Array(64);
+const BASE64_TO_ASCII = TEXT_ENCODER.encode("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+const BASE64URL_TO_ASCII = TEXT_ENCODER.encode("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
 
 const ASCII_TO_BASE64 = new Uint16Array(123);
 const ASCII_TO_BASE64URL = new Uint16Array(123);
+for (let i = 0; i < 64; i++) {
+	ASCII_TO_BASE64[BASE64_TO_ASCII[i]] = i | 0x8000;
+	ASCII_TO_BASE64URL[BASE64URL_TO_ASCII[i]] = i | 0x8000;
+}
 
 const PAD_ASCII = "=".charCodeAt(0);
 
-{
-	TEXT_ENCODER.encodeInto("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", BASE64_TO_ASCII);
-	TEXT_ENCODER.encodeInto("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_", BASE64URL_TO_ASCII);
-	for (let i = 0; i < 64; i++) {
-		ASCII_TO_BASE64[BASE64_TO_ASCII[i]] = i | 0x8000;
-		ASCII_TO_BASE64URL[BASE64URL_TO_ASCII[i]] = i | 0x8000;
-	}
-}
-
-function encode(value: Bytes, map: Uint8Array, pad: boolean): string {
+function encode(value: Bytes, map: Uint8Array, padding: boolean): string {
 	const bytes = asUint8Array(value);
-	const base64Length = pad ? Math.ceil(bytes.byteLength / 3) * 4 : Math.ceil(bytes.byteLength * 4 / 3);
-	const base64 = new Uint8Array(getSyncSharedBuffer(base64Length), 0, base64Length);
+	const base64Length = padding ? Math.ceil(bytes.byteLength / 3) * 4 : Math.ceil(bytes.byteLength * 4 / 3);
+	const base64 = new Uint8Array(getSharedBuffer(base64Length), 0, base64Length);
 	for (let i = 0, x = 0; i < bytes.byteLength;) {
 		const a = bytes[i];
 		base64[x++] = map[a >>> 2];
@@ -36,13 +31,13 @@ function encode(value: Bytes, map: Uint8Array, pad: boolean): string {
 				i++;
 			} else {
 				base64[x++] = map[(b & 0xf) << 2];
-				if (pad) {
+				if (padding) {
 					base64[x++] = PAD_ASCII;
 				}
 			}
 		} else {
 			base64[x++] = map[(a & 0x3) << 4];
-			if (pad) {
+			if (padding) {
 				base64[x++] = PAD_ASCII;
 				base64[x++] = PAD_ASCII;
 			}
@@ -52,7 +47,7 @@ function encode(value: Bytes, map: Uint8Array, pad: boolean): string {
 }
 
 function decode(value: string, map: Uint16Array): Uint8Array {
-	const base64 = new Uint8Array(getSyncSharedBuffer(value.length));
+	const base64 = new Uint8Array(getSharedBuffer(value.length));
 	TEXT_ENCODER.encodeInto(value, base64);
 
 	let padding = 0;
@@ -99,14 +94,19 @@ function decode(value: string, map: Uint16Array): Uint8Array {
 /**
  * Base64 encode bytes.
  *
+ * See RFC 3548 for more info.
+ *
  * @param value The bytes to encode.
+ * @param padding True, to include padding. Default is true.
  */
-export function encodeBase64(value: Bytes): string {
-	return encode(value, BASE64_TO_ASCII, true);
+export function encodeBase64(value: Bytes, padding = true): string {
+	return encode(value, BASE64_TO_ASCII, padding);
 }
 
 /**
  * Base64url encode bytes without padding characters.
+ *
+ * See RFC 3548 for more info.
  *
  * @param value The bytes to encode.
  * @param padding True, to include padding. Default is false.
@@ -118,7 +118,9 @@ export function encodeBase64URL(value: Bytes, padding = false): string {
 /**
  * Decode base64 encoded text.
  *
- * This does support padding characters, but not concatenated base64 strings.
+ * This does ignore padding characters, but not concatenated base64 strings.
+ *
+ * See RFC 3548 for more info.
  *
  * @param value The text to decode.
  */
@@ -129,7 +131,9 @@ export function decodeBase64(value: string): Uint8Array {
 /**
  * Decode base64url encoded text.
  *
- * This does support padding characters, but not concatenated base64url strings.
+ * This does ignore padding characters, but not concatenated base64url strings.
+ *
+ * See RFC 3548 for more info.
  *
  * @param value The text to decode.
  */
