@@ -15,9 +15,12 @@ export class Serializer {
 	#byteLength = 0;
 
 	/**
-	 * The raw parts to serialize
+	 * Sequence of part properties with offset:
+	 * + **3n + 0**: `byteLength: number`
+	 * + **3n + 1**: `serializeFn: Serializer.SerializeFn<unknown>`
+	 * + **3n + 2**: `value: unknown`
 	 */
-	readonly #parts: Part[] = [];
+	readonly #parts: unknown[] = [];
 
 	/**
 	 * Get the current byte length of all parts that have been appended to this serializer.
@@ -45,11 +48,7 @@ export class Serializer {
 
 	append<T>(byteLength: number, serialize: Serializer.SerializeFn<T>, value?: T): this {
 		this.#byteLength += byteLength;
-		this.#parts.push({
-			byteLength,
-			serialize: serialize as Serializer.SerializeFn<unknown>,
-			value,
-		});
+		this.#parts.push(byteLength, serialize, value);
 		return this;
 	}
 
@@ -73,10 +72,9 @@ export class Serializer {
 			view: new DataView(buffer),
 			byteOffset,
 		};
-		for (let i = 0; i < this.#parts.length; i++) {
-			const part = this.#parts[i];
-			part.serialize(context, part.value);
-			context.byteOffset += part.byteLength;
+		for (let i = 0; i < this.#parts.length; i += 3) {
+			(this.#parts[i + 1] as Serializer.SerializeFn<unknown>)(context, this.#parts[i + 2]);
+			context.byteOffset += this.#parts[i] as number;
 		}
 		return buffer;
 	}
@@ -358,12 +356,6 @@ export declare namespace Serializer {
 	 * A function to append a byte length to a serializer.
 	 */
 	export type PrefixFn = (this: Serializer, byteLength: number) => void;
-}
-
-interface Part {
-	readonly byteLength: number;
-	readonly serialize: Serializer.SerializeFn<unknown>;
-	readonly value: unknown;
 }
 
 function serializeBoolean(ctx: Serializer.SerializeContext, value: boolean): void {

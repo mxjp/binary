@@ -2,6 +2,7 @@
 
 ## 5.2
 + Upgrade to typescript 5.
++ Improved serializer performance by ~2x.
 + Add API for booleans and optional values:
   + `Serializer.use`
   + `Serializer.boolean`

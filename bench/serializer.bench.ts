@@ -1,6 +1,6 @@
 import type { Suite } from "benchmark";
 
-import { Serializer } from "../../src/index.js";
+import { Serializer } from "../src/index.js";
 
 export default function (suite: Suite): void {
 	function serialize() {
