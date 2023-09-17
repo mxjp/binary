@@ -40,6 +40,39 @@ const serialize = test.macro({
 	},
 });
 
+test(`${Serializer.prototype.use.name} (function)`, serialize, s => s.use(s => s.uint8(0x42)), binary`42`);
+test(`${Serializer.prototype.use.name} (object)`, serialize, s => s.use({
+	serialize(s) {
+		s.uint8(0x42);
+	},
+}), binary`42`);
+
+test(`${Serializer.prototype.use.name} (prefer function)`, serialize, s => s.use(Object.assign((serializer: Serializer) => {
+	serializer.uint8(0x42);
+}, {
+	serialize(serializer: Serializer) {
+		serializer.uint8(0x84);
+	},
+})), binary`42`);
+
+test(`${Serializer.prototype.boolean.name} (true)`, serialize, s => s.boolean(true), binary`01`);
+test(`${Serializer.prototype.boolean.name} (false)`, serialize, s => s.boolean(false), binary`00`);
+
+test(Serializer.prototype.none.name, serialize, s => s.none(), binary`00`);
+test(Serializer.prototype.some.name, serialize, s => s.some(), binary`01`);
+
+test(`${Serializer.prototype.useOption.name} (none, null)`, serialize, s => s.useOption(null), binary`00`);
+test(`${Serializer.prototype.useOption.name} (none, undefined)`, serialize, s => s.useOption(undefined), binary`00`);
+test(`${Serializer.prototype.useOption.name} (some)`, serialize, s => s.useOption(s => s.uint8(0x42)), binary`0142`);
+
+function uint8(s: Serializer, v: number) {
+	s.uint8(v);
+}
+
+test(`${Serializer.prototype.option.name} (none, null)`, serialize, s => s.option(null, uint8), binary`00`);
+test(`${Serializer.prototype.option.name} (none, undefined)`, serialize, s => s.option(undefined, uint8), binary`00`);
+test(`${Serializer.prototype.option.name} (some)`, serialize, s => s.option(0x42, uint8), binary`0142`);
+
 test(Serializer.prototype.uint8.name, serialize, s => s.uint8(0x42), binary`42`);
 
 test(Serializer.prototype.uint16.name, serialize, s => s.uint16(0x1234), binary`1234`);

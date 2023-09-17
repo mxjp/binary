@@ -1,5 +1,18 @@
 # Changelog
 
+## 5.2
++ Upgrade to typescript 5.
++ Add API for booleans and optional values:
+  + `Serializer.use`
+  + `Serializer.boolean`
+  + `Serializer.none`
+  + `Serializer.some`
+  + `Serializer.useOption`
+  + `Serializer.option`
+  + `Deserializer.boolean`
+  + `Deserializer.isSome`
+  + `Deserializer.option`
+
 ## 5.1
 + Add optional padding parameter to `encodeBase64`.
 + Add `encodeBase32` function.

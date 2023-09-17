@@ -135,6 +135,35 @@ export class Deserializer {
 	}
 
 	/**
+	 * Read an 8-bit sized boolean (0 = false, 1 = true).
+	 *
+	 * If a value other than 0 or 1 is read, a `RangeError` is thrown.
+	 */
+	boolean(): boolean {
+		switch (this.#view.getUint8(this.#mark(1))) {
+			case 0: return false;
+			case 1: return true;
+			default: throw new RangeError("boolean must be encoded as 0 or 1");
+		}
+	}
+
+	/**
+	 * Read a {@link boolean} indicating wether an optional value is present.
+	 */
+	isSome(): boolean {
+		return this.boolean();
+	}
+
+	/**
+	 * Read an optional value if {@link isSome present}.
+	 */
+	option<T>(deserialize: Deserializer.DeserializeFn<T>): T | undefined {
+		return this.isSome()
+			? deserialize(this)
+			: undefined;
+	}
+
+	/**
 	 * Read an 8-bit unsigned integer.
 	 */
 	uint8(): number {
@@ -244,5 +273,13 @@ export class Deserializer {
 }
 
 export declare namespace Deserializer {
+	/**
+	 * A function to restore a {@link Deserializer.checkpoint checkpoint}.
+	 */
 	export type RestoreCheckpointFn = () => void;
+
+	/**
+	 * A function to deserialize a value from a deserializer.
+	 */
+	export type DeserializeFn<T> = (deserializer: Deserializer) => T;
 }

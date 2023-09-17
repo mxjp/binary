@@ -82,6 +82,69 @@ export class Serializer {
 	}
 
 	/**
+	 * Serialize the specified value into this serializer.
+	 *
+	 * @param value A serializable object or a function to append parts to this serializer.
+	 */
+	use(value: Serializer.Serializable): this {
+		if (typeof value === "function") {
+			value(this);
+		} else {
+			value.serialize(this);
+		}
+		return this;
+	}
+
+	/**
+	 * Append an 8-bit sized boolean (0 = false, 1 = true).
+	 */
+	boolean(value: boolean): this {
+		return this.append(1, serializeBoolean, value);
+	}
+
+	/**
+	 * Serialize a {@link boolean} (false) to indicate that an optional value is absent.
+	 */
+	none(): this {
+		this.boolean(false);
+		return this;
+	}
+
+	/**
+	 * Serialize a {@link boolean} (true) to indicate that an optional value is present.
+	 */
+	some(): this {
+		this.boolean(true);
+		return this;
+	}
+
+	/**
+	 * Serialize {@link none} or {@link some} and the specified value if not null or undefined.
+	 */
+	useOption(value: Serializer.Serializable | null | undefined): this {
+		if (value === null || value === undefined) {
+			this.none();
+		} else {
+			this.some();
+			this.use(value);
+		}
+		return this;
+	}
+
+	/**
+	 * Serialize {@link none} or {@link some} and the specified value if not null or undefined.
+	 */
+	option<T>(value: T | null | undefined, serialize: Serializer.SerializePartsFn<T>): this {
+		if (value === null || value === undefined) {
+			this.none();
+		} else {
+			this.some();
+			serialize(this, value);
+		}
+		return this;
+	}
+
+	/**
 	 * Append an 8-bit unsigned integer.
 	 */
 	uint8(value: number): this {
@@ -287,6 +350,11 @@ export declare namespace Serializer {
 	export type Serializable = SerializableObject | SerializableFn;
 
 	/**
+	 * A function to serialize parts of a value.
+	 */
+	export type SerializePartsFn<T> = (serializer: Serializer, value: T) => void;
+
+	/**
 	 * A function to append a byte length to a serializer.
 	 */
 	export type PrefixFn = (this: Serializer, byteLength: number) => void;
@@ -296,6 +364,10 @@ interface Part {
 	readonly byteLength: number;
 	readonly serialize: Serializer.SerializeFn<unknown>;
 	readonly value: unknown;
+}
+
+function serializeBoolean(ctx: Serializer.SerializeContext, value: boolean): void {
+	ctx.view.setUint8(ctx.byteOffset, value ? 1 : 0);
 }
 
 function serializeUint8(ctx: Serializer.SerializeContext, value: number): void {

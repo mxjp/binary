@@ -116,6 +116,15 @@ const deserialize = test.macro({
 	},
 });
 
+test(`${Deserializer.prototype.boolean.name} (true)`, deserialize, binary`01`, d => d.boolean(), true);
+test(`${Deserializer.prototype.boolean.name} (false)`, deserialize, binary`00`, d => d.boolean(), false);
+
+test(`${Deserializer.prototype.isSome.name} (some)`, deserialize, binary`01`, d => d.isSome(), true);
+test(`${Deserializer.prototype.isSome.name} (none)`, deserialize, binary`00`, d => d.isSome(), false);
+
+test(`${Deserializer.prototype.option.name} (none)`, deserialize, binary`00`, d => d.option(d => d.uint8()), undefined);
+test(`${Deserializer.prototype.option.name} (some)`, deserialize, binary`0177`, d => d.option(d => d.uint8()), 0x77);
+
 test(Deserializer.prototype.uint8.name, deserialize, binary`01`, d => d.uint8(), 0x01);
 
 test(Deserializer.prototype.uint16.name, deserialize, binary`0102`, d => d.uint16(), 0x0102);
