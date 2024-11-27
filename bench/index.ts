@@ -1,52 +1,37 @@
-import { join } from "node:path";
+import { setupSharedBuffer } from "@mpt/binary";
+import Benchmark from "benchmark";
+import { readdir } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import colors from "ansi-colors";
-import benchmark from "benchmark";
-import globby from "globby";
-import createMatcher from "ignore";
-
-import { setupSharedBuffer } from "../src/shared-buffers.js";
+const ctx = dirname(fileURLToPath(import.meta.url));
 
 interface BenchModule {
-	default?: (suite: benchmark.Suite) => void;
+	default: (suite: Benchmark.Suite) => void;
 }
 
-void (async () => {
-	const matcher = createMatcher();
-	const patterns = process.argv.slice(2);
-	patterns.forEach(pattern => matcher.add(pattern));
+setupSharedBuffer(20_000);
 
-	setupSharedBuffer(20000);
-
-	const dirname = join(fileURLToPath(import.meta.url), "..");
-	for (const filename of await globby("./**/*.bench.js", { cwd: dirname })) {
-		const name = filename.replace(/\\/g, "/").replace(/\.bench\.js$/, "");
-		if (patterns.length === 0 || matcher.ignores(name)) {
-			const module = await import(pathToFileURL(join(dirname, filename)).toString()) as BenchModule;
-			if (typeof module.default === "function") {
-				await new Promise<void>((resolve, reject) => {
-					const suite = new benchmark.Suite(name, {
-						onStart() {
-							console.log(colors.green(name));
-						},
-						onCycle(event: Event) {
-							console.log(`  ${event.target}`);
-						},
-						onComplete() {
-							console.log();
-							resolve();
-						},
-						onError: reject,
-					});
-					module.default!(suite);
-					if (suite.length === 0) {
-						resolve();
-					} else {
-						suite.run({ async: true });
-					}
-				});
-			}
-		}
+for (const name of await readdir(ctx)) {
+	if (name.endsWith(".bench.js")) {
+		const module = await import(pathToFileURL(join(ctx, name)).toString()) as BenchModule;
+		console.group(name);
+		await new Promise<void>((resolve, reject) => {
+			const suite = new Benchmark.Suite(name, {
+				onStart() {
+				},
+				onCycle(event: Event) {
+					console.log(String(event.target));
+				},
+				onComplete() {
+					console.log();
+					resolve();
+				},
+				onError: reject,
+			});
+			module.default(suite);
+			suite.run({ async: true });
+		});
+		console.groupEnd();
 	}
-})();
+}

@@ -45,7 +45,7 @@ export class Deserializer {
 				throw new RangeError("byteOffset or byteLength is out of buffer range");
 			}
 		} else {
-			this.#buffer = data.buffer;
+			this.#buffer = data.buffer as ArrayBuffer;
 			this.#byteOffset = byteOffset === undefined ? data.byteOffset : data.byteOffset + byteOffset;
 			this.#endByteOffset = byteLength === undefined ? data.byteOffset + data.byteLength : this.#byteOffset + byteLength;
 			if (this.#byteOffset < data.byteOffset || this.#byteOffset > this.#endByteOffset || this.#endByteOffset > (data.byteOffset + data.byteLength)) {

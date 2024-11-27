@@ -8,7 +8,7 @@ export class Binary {
 
 	public get buffer(): ArrayBuffer {
 		const buffer = this.nodeBuffer;
-		return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+		return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
 	}
 
 	public get array(): Uint8Array {

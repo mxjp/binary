@@ -1,14 +1,10 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"declaration": false,
-		"target": "ESNext",
-		"rootDir": ".",
+		"rootDir": "bench",
 		"outDir": "bench_out"
 	},
 	"include": [
-		"src",
-		"test",
 		"bench"
 	]
 }

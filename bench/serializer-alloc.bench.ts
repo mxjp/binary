@@ -1,7 +1,5 @@
-
+import { Serializer } from "@mpt/binary";
 import type { Suite } from "benchmark";
-
-import { Serializer } from "../src/index.js";
 
 export default function (suite: Suite): void {
 	function add(title: string, byteLength: number, prepare: (s: Serializer, byteLength: number) => void) {

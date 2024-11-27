@@ -1,6 +1,5 @@
+import { Deserializer, Serializer } from "@mpt/binary";
 import type { Suite } from "benchmark";
-
-import { Deserializer, Serializer } from "../src/index.js";
 
 export default function (suite: Suite): void {
 	const data = Serializer.serialize(s => {

@@ -1,7 +1,0 @@
-node_modules
-dist
-test_out
-*.js
-*.cjs
-*.mjs
-*.html

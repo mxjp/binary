@@ -1,4 +1,4 @@
-/node_modules
-/dist
-/test_out
 /bench_out
+/dist
+/node_modules
+/test_out

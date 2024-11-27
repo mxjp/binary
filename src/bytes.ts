@@ -25,7 +25,7 @@ export function asDataView(bytes: Bytes): DataView {
  */
 export function copyBytes(bytes: Bytes): ArrayBuffer {
 	return bytes instanceof Uint8Array
-		? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+		? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 		: bytes.slice(0);
 }
 

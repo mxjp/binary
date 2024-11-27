@@ -1,7 +1,6 @@
+import { decodeHex } from "@mpt/binary";
 import type { Suite } from "benchmark";
-
-import { encodeHex } from "../../src/index.js";
-import { getPseudoRandomBytes } from "../../test/_common/random-bytes.js";
+import { getPseudoRandomBytes } from "./common.js";
 
 export default function (suite: Suite): void {
 	for (const length of [
@@ -9,9 +8,10 @@ export default function (suite: Suite): void {
 		1000,
 		10000,
 	]) {
-		const data = getPseudoRandomBytes(length);
+		const data = Buffer.from(getPseudoRandomBytes(length)).toString("hex");
+
 		suite.add(`${length} bytes`, () => {
-			encodeHex(data);
+			decodeHex(data);
 		});
 	}
 }

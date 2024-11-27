@@ -1,7 +1,6 @@
+import { encodeBase64 } from "@mpt/binary";
 import type { Suite } from "benchmark";
-
-import { encodeBase64 } from "../../src/index.js";
-import { getPseudoRandomBytes } from "../../test/_common/random-bytes.js";
+import { getPseudoRandomBytes } from "./common.js";
 
 export default function (suite: Suite): void {
 	for (const length of [
