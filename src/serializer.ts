@@ -1,3 +1,4 @@
+import { allocUnique } from "./alloc.js";
 import { asUint8Array, Bytes } from "./bytes.js";
 
 /**
@@ -65,7 +66,7 @@ export class Serializer {
 	 */
 	serialize(buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
 
-	serialize(buffer: ArrayBuffer = new ArrayBuffer(this.#byteLength), byteOffset = 0): ArrayBuffer {
+	serialize(buffer: ArrayBuffer = allocUnique(this.#byteLength), byteOffset = 0): ArrayBuffer {
 		const context = {
 			buffer,
 			array: new Uint8Array(buffer),

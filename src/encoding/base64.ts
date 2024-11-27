@@ -1,4 +1,4 @@
-import { alloc } from "../alloc.js";
+import { alloc, allocUnique } from "../alloc.js";
 import { asUint8Array, Bytes } from "../bytes.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
@@ -65,7 +65,7 @@ function decode(value: string, map: Uint16Array): Uint8Array {
 		throw new TypeError("invalid data");
 	}
 	const byteLength = ((base64Length >>> 2) * 3) + (partial >>> 1) + (partial & 0x1);
-	const bytes = new Uint8Array(byteLength);
+	const bytes = new Uint8Array(allocUnique(byteLength));
 	for (let i = 0, x = 0; i < byteLength;) {
 		const a = map[base64[x++]];
 		const b = map[base64[x++]];

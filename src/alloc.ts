@@ -5,7 +5,12 @@ export interface Allocator {
 	 *
 	 * Subsequent calls may return the same buffer.
 	 */
-	alloc(minByteLength: number): ArrayBuffer;
+	alloc?(minByteLength: number): ArrayBuffer;
+
+	/**
+	 * Allocate an array buffer of the specified byte length.
+	 */
+	allocUnique?(byteLength: number): ArrayBuffer;
 
 	/**
 	 * Dispose this allocator.
@@ -21,7 +26,14 @@ let ALLOCATOR: Allocator | null = null;
  * Subsequent calls may return the same buffer.
  */
 export function alloc(minByteLength: number): ArrayBuffer {
-	return ALLOCATOR?.alloc(minByteLength) ?? new ArrayBuffer(minByteLength);
+	return ALLOCATOR?.alloc?.(minByteLength) ?? new ArrayBuffer(minByteLength);
+}
+
+/**
+ * Allocate an array buffer of the specified byte length.
+ */
+export function allocUnique(byteLength: number): ArrayBuffer {
+	return ALLOCATOR?.allocUnique?.(byteLength) ?? new ArrayBuffer(byteLength);
 }
 
 /**
@@ -68,13 +80,17 @@ function fillZeroes(buffer: ArrayBuffer) {
 }
 
 /**
- * An allocator that always returns distinct buffers. When disposed, all allocated buffers are zero filled.
+ * An allocator that always returns unique buffers. When disposed, all allocated buffers are zero filled.
  */
-export class ZeroingDistinctAllocator implements Allocator {
+export class UniqueZeroingAllocator implements Allocator {
 	#buffers: ArrayBuffer[] = [];
 
 	alloc(minByteLength: number): ArrayBuffer {
-		const buffer = new ArrayBuffer(minByteLength);
+		return this.allocUnique(minByteLength);
+	}
+
+	allocUnique(byteLength: number): ArrayBuffer {
+		const buffer = new ArrayBuffer(byteLength);
 		this.#buffers.push(buffer);
 		return buffer;
 	}

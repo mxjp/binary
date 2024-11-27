@@ -1,3 +1,4 @@
+import { allocUnique } from "./alloc.js";
 
 /**
  * An array of bytes.
@@ -79,7 +80,7 @@ export function concatBytes(chunks: Bytes[], chunksByteLength?: number): Uint8Ar
 			chunksByteLength += chunks[i].byteLength;
 		}
 	}
-	const array = new Uint8Array(chunksByteLength);
+	const array = new Uint8Array(allocUnique(chunksByteLength));
 	for (let i = 0, o = 0; i < chunks.length; i++) {
 		const chunk = asUint8Array(chunks[i]);
 		array.set(chunk, o);

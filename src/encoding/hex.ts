@@ -1,4 +1,4 @@
-import { alloc } from "../alloc.js";
+import { alloc, allocUnique } from "../alloc.js";
 import { asUint8Array, Bytes } from "../bytes.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
@@ -54,7 +54,7 @@ export function decodeHex(value: string): Uint8Array {
 	if (!Number.isInteger(byteLength)) {
 		throw new TypeError("invalid hex data");
 	}
-	const bytes = new Uint8Array(byteLength);
+	const bytes = new Uint8Array(allocUnique(byteLength));
 	const buffer = alloc(value.length);
 	const chars = new Uint8Array(buffer);
 	TEXT_ENCODER.encodeInto(value, chars);

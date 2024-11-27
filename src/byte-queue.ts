@@ -1,3 +1,4 @@
+import { allocUnique } from "./alloc.js";
 import { asUint8Array, Bytes } from "./bytes.js";
 
 /**
@@ -75,7 +76,7 @@ export class ByteQueue {
 		if (byteLength > this.#byteLength) {
 			byteLength = this.#byteLength;
 		}
-		const array = new Uint8Array(byteLength);
+		const array = new Uint8Array(allocUnique(byteLength));
 		if (byteLength > 0) {
 			this.#dequeue(byteLength, array, remove);
 		}
