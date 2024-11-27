@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0
++ **Breaking:** Move `@mpt/binary/node` export to package exports map.
+
 ## 5.2
 + Upgrade to typescript 5.
 + Improved serializer performance by ~2x.
@@ -20,12 +23,12 @@
 + Export `setupSharedBuffer`.
 
 ## 5.0
-+ **Breakig change:** Drop CommonJS support.
++ **Breakig:** Drop CommonJS support.
 
 ## 4.1
 + Fix package export map.
 
 ## 4.0
-+ **Breaking change:** Drop support for NodeJS 16 or lower.
-+ **Breaking change:** Replace enums with type definitions.
++ **Breaking:** Drop support for NodeJS 16 or lower.
++ **Breaking:** Replace enums with type definitions.
 + Add explicit extensions to module imports.
