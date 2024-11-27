@@ -11,11 +11,6 @@ export interface Allocator {
 	 * Allocate an array buffer of the specified byte length.
 	 */
 	allocUnique?(byteLength: number): ArrayBuffer;
-
-	/**
-	 * Dispose this allocator.
-	 */
-	dispose?(): void;
 }
 
 let ALLOCATOR: Allocator | null = null;
@@ -52,7 +47,6 @@ export function withAllocator<T>(allocator: Allocator, fn: () => T) {
 		ALLOCATOR = allocator;
 		return fn();
 	} finally {
-		allocator.dispose?.();
 		ALLOCATOR = outer;
 	}
 }
@@ -75,14 +69,10 @@ export class SharedBufferAllocator implements Allocator {
 	}
 }
 
-function fillZeroes(buffer: ArrayBuffer) {
-	new Uint8Array(buffer).fill(0);
-}
-
 /**
- * An allocator that always returns unique buffers. When disposed, all allocated buffers are zero filled.
+ * An allocator that always returns unique buffers and allows zero filling all allocated buffers after use.
  */
-export class UniqueZeroingAllocator implements Allocator {
+export class ZeroingUniqueAllocator implements Allocator {
 	#buffers: ArrayBuffer[] = [];
 
 	alloc(minByteLength: number): ArrayBuffer {
@@ -95,8 +85,20 @@ export class UniqueZeroingAllocator implements Allocator {
 		return buffer;
 	}
 
-	dispose(): void {
-		this.#buffers.forEach(fillZeroes);
+	/**
+	 * Zero fill all allocated buffers and discard their references.
+	 *
+	 * @param exclude Optional array of buffers to exclude from zero filling.
+	 */
+	release(exclude?: ArrayBuffer[]): void {
+		const buffers = this.#buffers;
+		for (let i = 0; i < buffers.length; i++) {
+			const buffer = buffers[i];
+			if (exclude?.includes(buffer)) {
+				continue;
+			}
+			new Uint8Array(buffer).fill(0);
+		}
 		this.#buffers.length = 0;
 	}
 }
