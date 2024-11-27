@@ -30,7 +30,7 @@
 		"build:test": "tsc -p tsconfig-test.json",
 		"test": "node --enable-source-maps --test \"./test_out/**/*.test.js\"",
 		"bench": "tsc -p tsconfig-bench.json && node bench_out/index.js",
-		"prepack": "npm build && npm test"
+		"prepack": "npm run build && npm test"
 	},
 	"devDependencies": {
 		"@mpt/binary": "file:.",

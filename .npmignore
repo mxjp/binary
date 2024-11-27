@@ -1,6 +1,6 @@
+/.editorconfig
 /.github
 /.gitignore
-/ava*
 /bench*
 /src
 /test*
