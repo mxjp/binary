@@ -1,5 +1,5 @@
+import { alloc } from "../alloc.js";
 import { asUint8Array, Bytes } from "../bytes.js";
-import { getSharedBuffer } from "../shared-buffers.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
 const BASE64_TO_ASCII = TEXT_ENCODER.encode("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
@@ -17,7 +17,7 @@ const PAD_ASCII = "=".charCodeAt(0);
 function encode(value: Bytes, map: Uint8Array, padding: boolean): string {
 	const bytes = asUint8Array(value);
 	const base64Length = padding ? Math.ceil(bytes.byteLength / 3) * 4 : Math.ceil(bytes.byteLength * 4 / 3);
-	const base64 = new Uint8Array(getSharedBuffer(base64Length), 0, base64Length);
+	const base64 = new Uint8Array(alloc(base64Length), 0, base64Length);
 	for (let i = 0, x = 0; i < bytes.byteLength;) {
 		const a = bytes[i];
 		base64[x++] = map[a >>> 2];
@@ -47,7 +47,7 @@ function encode(value: Bytes, map: Uint8Array, padding: boolean): string {
 }
 
 function decode(value: string, map: Uint16Array): Uint8Array {
-	const base64 = new Uint8Array(getSharedBuffer(value.length));
+	const base64 = new Uint8Array(alloc(value.length));
 	TEXT_ENCODER.encodeInto(value, base64);
 
 	let padding = 0;

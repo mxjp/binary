@@ -57,9 +57,3 @@ Supported encodings:
 + base64
 + base64url
 + base32 (encode only)
-
-### Memory Usage
-Some encoders/decoders in this library make use of an internal shared buffer to avoid memory allocations if possible.
-```ts
-setupSharedBuffer(2048);
-```

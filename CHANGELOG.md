@@ -2,6 +2,7 @@
 
 ## 6.0
 + **Breaking:** Move `@mpt/binary/node` export to package exports map.
++ **Breaking:** Remove shared buffers in favor of custom allocators.
 
 ## 5.2
 + Upgrade to typescript 5.

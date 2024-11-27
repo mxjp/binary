@@ -1,4 +1,4 @@
-import { setupSharedBuffer } from "@mpt/binary";
+import { setGlobalAllocator, SharedBufferAllocator } from "@mpt/binary";
 import Benchmark from "benchmark";
 import { readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -10,7 +10,7 @@ interface BenchModule {
 	default: (suite: Benchmark.Suite) => void;
 }
 
-setupSharedBuffer(20_000);
+setGlobalAllocator(new SharedBufferAllocator(new ArrayBuffer(20_000)));
 
 for (const name of await readdir(ctx)) {
 	if (name.endsWith(".bench.js")) {
