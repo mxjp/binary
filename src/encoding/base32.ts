@@ -1,4 +1,4 @@
-import { alloc } from "../alloc.js";
+import { allocSync } from "../alloc.js";
 import { asUint8Array, Bytes } from "../bytes.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
@@ -19,7 +19,7 @@ export function encodeBase32(value: Bytes, pad = false): string {
 	const rest = array.byteLength % 5;
 	const comp = array.byteLength - rest;
 	const base32Length = pad ? Math.ceil(array.byteLength / 5) * 8 : Math.ceil(array.byteLength / 5 * 8);
-	const base32 = new Uint8Array(alloc(base32Length), 0, base32Length);
+	const base32 = new Uint8Array(allocSync(base32Length), 0, base32Length);
 	let b = 0;
 	for (let i = 0; i < comp; i += 5) {
 		base32[b++] = BASE32_TO_ASCII[array[i] >>> 3];

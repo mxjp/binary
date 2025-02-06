@@ -15,10 +15,6 @@
 		".": {
 			"default": "./dist/index.js",
 			"types": "./dist/index.d.ts"
-		},
-		"./node": {
-			"default": "./dist/node/index.js",
-			"types": "./dist/node/index.d.ts"
 		}
 	},
 	"scripts": {
@@ -36,7 +32,7 @@
 		"@mpt/binary": "file:.",
 		"@mxjp/parallel": "^1.0.2",
 		"@types/benchmark": "^2.1.5",
-		"@types/node": "^22.10.0",
+		"@types/node": "^22.13.1",
 		"benchmark": "^2.1.4",
 		"typescript": "^5.7.2"
 	},

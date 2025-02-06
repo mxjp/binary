@@ -12,7 +12,7 @@ export class Deserializer {
 	/**
 	 * The underlying buffer to read from.
 	 */
-	#buffer: ArrayBuffer;
+	#buffer: ArrayBufferLike;
 
 	/**
 	 * A data view over the complete underlying buffer.
@@ -37,19 +37,19 @@ export class Deserializer {
 	 * @param byteLength The byte length that is available for reading.
 	 */
 	constructor(data: Bytes, byteOffset?: number, byteLength?: number) {
-		if (data instanceof ArrayBuffer) {
+		if (data instanceof Uint8Array) {
+			this.#buffer = data.buffer;
+			this.#byteOffset = byteOffset === undefined ? data.byteOffset : data.byteOffset + byteOffset;
+			this.#endByteOffset = byteLength === undefined ? data.byteOffset + data.byteLength : this.#byteOffset + byteLength;
+			if (this.#byteOffset < data.byteOffset || this.#byteOffset > this.#endByteOffset || this.#endByteOffset > (data.byteOffset + data.byteLength)) {
+				throw new RangeError("byteOffset or byteLength is out of view range");
+			}
+		} else {
 			this.#buffer = data;
 			this.#byteOffset = byteOffset ?? 0;
 			this.#endByteOffset = byteLength === undefined ? data.byteLength : (this.#byteOffset + byteLength);
 			if (this.#byteOffset < 0 || this.#byteOffset > this.#endByteOffset || this.#endByteOffset > this.#buffer.byteLength) {
 				throw new RangeError("byteOffset or byteLength is out of buffer range");
-			}
-		} else {
-			this.#buffer = data.buffer as ArrayBuffer;
-			this.#byteOffset = byteOffset === undefined ? data.byteOffset : data.byteOffset + byteOffset;
-			this.#endByteOffset = byteLength === undefined ? data.byteOffset + data.byteLength : this.#byteOffset + byteLength;
-			if (this.#byteOffset < data.byteOffset || this.#byteOffset > this.#endByteOffset || this.#endByteOffset > (data.byteOffset + data.byteLength)) {
-				throw new RangeError("byteOffset or byteLength is out of view range");
 			}
 		}
 		this.#view = new DataView(this.#buffer);
@@ -58,7 +58,7 @@ export class Deserializer {
 	/**
 	 * The underlying array buffer.
 	 */
-	get buffer(): ArrayBuffer {
+	get buffer(): ArrayBufferLike {
 		return this.#buffer;
 	}
 
@@ -243,21 +243,21 @@ export class Deserializer {
 	/**
 	 * Read the next n bytes by creating an Uint8Array that views the underlying buffer.
 	 */
-	array(byteLength: number): Uint8Array {
+	viewArray(byteLength: number): Uint8Array {
 		return new Uint8Array(this.#buffer, this.#mark(byteLength), byteLength);
 	}
 
 	/**
 	 * Read the next n bytes by creating a DataView that views the underlying buffer.
 	 */
-	view(byteLength: number): DataView {
+	viewData(byteLength: number): DataView {
 		return new DataView(this.#buffer, this.#mark(byteLength), byteLength);
 	}
 
 	/**
 	 * Read the next n bytes by copying into a new ArrayBuffer.
 	 */
-	slice(byteLength: number): ArrayBuffer {
+	copy(byteLength: number): ArrayBufferLike {
 		const start = this.#mark(byteLength);
 		return this.#buffer.slice(start, start + byteLength);
 	}
@@ -268,7 +268,7 @@ export class Deserializer {
 	 * Note that a `DOMException` is thrown if an encoding error is found.
 	 */
 	utf8(byteLength: number): string {
-		return Deserializer.UTF8.decode(this.array(byteLength));
+		return Deserializer.UTF8.decode(this.viewArray(byteLength));
 	}
 }
 
@@ -281,5 +281,5 @@ export declare namespace Deserializer {
 	/**
 	 * A function to deserialize a value from a deserializer.
 	 */
-	export type DeserializeFn<T> = (deserializer: Deserializer) => T;
+	export type DeserializeFn<T> = T extends Promise<any> ? never : (deserializer: Deserializer) => T;
 }

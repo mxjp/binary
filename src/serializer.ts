@@ -64,9 +64,9 @@ export class Serializer {
 	 * @param buffer The buffer to serialize into.
 	 * @param byteOffset The offset at which to start serializing data. Default is 0.
 	 */
-	serialize(buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
+	serialize<T extends ArrayBufferLike>(buffer: T, byteOffset?: number): T;
 
-	serialize(buffer: ArrayBuffer = allocUnique(this.#byteLength), byteOffset = 0): ArrayBuffer {
+	serialize(buffer: ArrayBufferLike = allocUnique(this.#byteLength), byteOffset = 0): ArrayBufferLike {
 		const context = {
 			buffer,
 			array: new Uint8Array(buffer),
@@ -288,22 +288,15 @@ export class Serializer {
 	}
 
 	/**
-	 * Serialize an object into a new array buffer.
-	 *
-	 * @param serializable A serializable object or a function to append parts to a serializer.
-	 */
-	static serialize(serializable: Serializer.Serializable): ArrayBuffer;
-
-	/**
 	 * Serialize an object into an existing array buffer.
 	 *
 	 * @param serializable A serializable object or a function to append parts to a serializer.
 	 * @param buffer The buffer to serialize into.
 	 * @param byteOffset The offset at which to start serializing data. Default is 0.
 	 */
-	static serialize(serializable: Serializer.Serializable, buffer: ArrayBuffer, byteOffset?: number): ArrayBuffer;
-
-	static serialize(serializable: Serializer.Serializable, buffer?: ArrayBuffer, byteOffset?: number): ArrayBuffer {
+	static serialize(serializable: Serializer.Serializable): ArrayBuffer;
+	static serialize<T extends ArrayBufferLike>(serializable: Serializer.Serializable, buffer: T, byteOffset?: number): T;
+	static serialize(serializable: Serializer.Serializable, buffer?: ArrayBufferLike, byteOffset?: number): ArrayBufferLike {
 		const serializer = new Serializer();
 		if (typeof serializable === "function") {
 			serializable(serializer);
@@ -317,7 +310,7 @@ export class Serializer {
 export declare namespace Serializer {
 	export interface SerializeContext {
 		/** The buffer that the part should be serialized to. */
-		readonly buffer: ArrayBuffer;
+		readonly buffer: ArrayBufferLike;
 		/** A uint-8 view over the buffer of this context. */
 		readonly array: Uint8Array;
 		/** A data view over the buffer of this context. */

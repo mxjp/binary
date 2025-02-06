@@ -3,7 +3,7 @@ import { allocUnique } from "./alloc.js";
 /**
  * An array of bytes.
  */
-export type Bytes = ArrayBuffer | Uint8Array;
+export type Bytes = ArrayBufferLike | Uint8Array;
 
 /**
  * Get the specified bytes as an uint 8 array.
@@ -24,10 +24,17 @@ export function asDataView(bytes: Bytes): DataView {
 /**
  * Create a copy of the specified bytes.
  */
-export function copyBytes(bytes: Bytes): ArrayBuffer {
+export function copyBytes(bytes: Bytes): ArrayBufferLike {
 	return bytes instanceof Uint8Array
-		? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
+		? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
 		: bytes.slice(0);
+}
+
+/**
+ * Zero fill the specified buffer.
+ */
+export function zeroFillBuffer(buffer: ArrayBufferLike) {
+	new Uint8Array(buffer).fill(0);
 }
 
 /**

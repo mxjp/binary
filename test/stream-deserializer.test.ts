@@ -93,7 +93,7 @@ await suite("stream-deserializer", async () => {
 
 			const prefix = d.uint8();
 			requireByteLength(1 + prefix);
-			return d.slice(prefix);
+			return d.copy(prefix);
 		});
 
 		deepStrictEqual(v1, binary`040506`.buffer);
@@ -113,6 +113,6 @@ await suite("stream-deserializer", async () => {
 		strictEqual(await deserializer.ended(), false);
 
 		const remaining = deserializer.releaseLock()!;
-		deepStrictEqual(remaining.slice(remaining.bytesAvailable), binary`02`.buffer);
+		deepStrictEqual(remaining.copy(remaining.bytesAvailable), binary`02`.buffer);
 	});
 });

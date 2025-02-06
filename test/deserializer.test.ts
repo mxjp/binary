@@ -150,9 +150,9 @@ await suite("deserializer", async () => {
 		[`${Deserializer.prototype.float64le.name} (Infinity)`, binary`7ff00000000000000`.reverse, (d: Deserializer) => d.float64le(), Infinity],
 		[`${Deserializer.prototype.float64le.name} (-Infinity)`, binary`fff00000000000000`.reverse, (d: Deserializer) => d.float64le(), -Infinity],
 
-		[Deserializer.prototype.array.name, binary`0102`, (d: Deserializer) => d.array(2), binary`0102`.array],
-		[Deserializer.prototype.view.name, binary`0102`, (d: Deserializer) => d.view(2), binary`0102`.view],
-		[Deserializer.prototype.slice.name, binary`0102`, (d: Deserializer) => d.slice(2), binary`0102`.buffer],
+		[Deserializer.prototype.viewArray.name, binary`0102`, (d: Deserializer) => d.viewArray(2), binary`0102`.array],
+		[Deserializer.prototype.viewData.name, binary`0102`, (d: Deserializer) => d.viewData(2), binary`0102`.view],
+		[Deserializer.prototype.copy.name, binary`0102`, (d: Deserializer) => d.copy(2), binary`0102`.buffer],
 		[Deserializer.prototype.utf8.name, binary`${"foo"}`, (d: Deserializer) => d.utf8(3), "foo"],
 	] as const) {
 		await test(name, () => {

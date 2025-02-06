@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.0
++ **Breaking:** Rename `alloc` & `Allocator.alloc` to `allocSync`.
++ **Breaking:** Remove support for native node streams.
++ **Breaking:** Rename `ZeroingUniqueAllocator.release` to `zeroFill`.
++ **Breaking:** Rename `Deserializer.array` to `viewArray`.
++ **Breaking:** Rename `Deserializer.view` to `viewData`.
++ **Breaking:** Rename `Deserializer.slice` to `copy`.
++ **Breaking:** Add type safeguards against async functions where synchronous functions are expected.
++ Add `zeroFillBuffer` utility.
++ Add ``withZeroingUniqueAllocator` utility.
++ Add support for shared array buffers.
+
 ## 6.0
 + **Breaking:** Move `@mpt/binary/node` export to package exports map.
 + **Breaking:** Remove shared buffers in favor of custom allocators.

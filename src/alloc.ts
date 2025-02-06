@@ -1,11 +1,12 @@
+import { zeroFillBuffer } from "./bytes.js";
 
 export interface Allocator {
 	/**
-	 * Allocate an array buffer of at least the specified byte length for synchronous use.
+	 * Allocate an array buffer of at least the specified byte length for immediaty synchronous use.
 	 *
 	 * Subsequent calls may return the same buffer.
 	 */
-	alloc?(minByteLength: number): ArrayBuffer;
+	allocSync?(minByteLength: number): ArrayBuffer;
 
 	/**
 	 * Allocate an array buffer of the specified byte length.
@@ -16,12 +17,12 @@ export interface Allocator {
 let ALLOCATOR: Allocator | null = null;
 
 /**
- * Allocate an array buffer of at least the specified byte length for synchronous use.
+ * Allocate an array buffer of at least the specified byte length for immediate synchronous use.
  *
  * Subsequent calls may return the same buffer.
  */
-export function alloc(minByteLength: number): ArrayBuffer {
-	return ALLOCATOR?.alloc?.(minByteLength) ?? new ArrayBuffer(minByteLength);
+export function allocSync(minByteLength: number): ArrayBuffer {
+	return ALLOCATOR?.allocSync?.(minByteLength) ?? new ArrayBuffer(minByteLength);
 }
 
 /**
@@ -39,15 +40,27 @@ export function setGlobalAllocator(allocator: Allocator | null) {
 }
 
 /**
- * Temporarily use and then dispose the specified allocator.
+ * Run a synchronous function while using the specified allocator.
  */
-export function withAllocator<T>(allocator: Allocator, fn: () => T) {
+export function withAllocator<T>(allocator: Allocator, fn: T extends Promise<any> ? never : () => T): T {
 	const outer = ALLOCATOR;
 	try {
 		ALLOCATOR = allocator;
 		return fn();
 	} finally {
 		ALLOCATOR = outer;
+	}
+}
+
+/**
+ * Run a synchronous function and zero fill allocated buffers before returning the result.
+ */
+export function withZeroingUniqueAllocator<T>(fn: T extends Promise<any> ? never : () => T): T {
+	const allocator = new ZeroingUniqueAllocator();
+	try {
+		return withAllocator<T>(allocator, fn);
+	} finally {
+		allocator.zeroFill();
 	}
 }
 
@@ -61,7 +74,7 @@ export class SharedBufferAllocator implements Allocator {
 		this.buffer = buffer;
 	}
 
-	alloc(minByteLength: number): ArrayBuffer {
+	allocSync(minByteLength: number): ArrayBuffer {
 		if (minByteLength > this.buffer.byteLength) {
 			return new ArrayBuffer(minByteLength);
 		}
@@ -75,7 +88,7 @@ export class SharedBufferAllocator implements Allocator {
 export class ZeroingUniqueAllocator implements Allocator {
 	#buffers: ArrayBuffer[] = [];
 
-	alloc(minByteLength: number): ArrayBuffer {
+	allocSync(minByteLength: number): ArrayBuffer {
 		return this.allocUnique(minByteLength);
 	}
 
@@ -90,15 +103,8 @@ export class ZeroingUniqueAllocator implements Allocator {
 	 *
 	 * @param exclude Optional array of buffers to exclude from zero filling.
 	 */
-	release(exclude?: ArrayBuffer[]): void {
-		const buffers = this.#buffers;
-		for (let i = 0; i < buffers.length; i++) {
-			const buffer = buffers[i];
-			if (exclude?.includes(buffer)) {
-				continue;
-			}
-			new Uint8Array(buffer).fill(0);
-		}
+	zeroFill(): void {
+		this.#buffers.forEach(zeroFillBuffer);
 		this.#buffers.length = 0;
 	}
 }

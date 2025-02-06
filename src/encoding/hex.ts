@@ -1,4 +1,4 @@
-import { alloc, allocUnique } from "../alloc.js";
+import { allocSync, allocUnique } from "../alloc.js";
 import { asUint8Array, Bytes } from "../bytes.js";
 import { TEXT_DECODER, TEXT_ENCODER } from "../shared-encoders.js";
 
@@ -35,7 +35,7 @@ export function encodeHex(value: Bytes, upperCase = false): string {
 	const bytes = asUint8Array(value);
 	const byteToHexAscii = upperCase ? BYTE_TO_HEX_ASCII_U : BYTE_TO_HEX_ASCII_L;
 	const bufferLength = bytes.byteLength << 1;
-	const buffer = alloc(bufferLength);
+	const buffer = allocSync(bufferLength);
 	const view = new DataView(buffer, 0, bufferLength);
 	for (let i = 0; i < bytes.byteLength; i++) {
 		view.setUint16(i << 1, byteToHexAscii[bytes[i]]);
@@ -55,7 +55,7 @@ export function decodeHex(value: string): Uint8Array {
 		throw new TypeError("invalid hex data");
 	}
 	const bytes = new Uint8Array(allocUnique(byteLength));
-	const buffer = alloc(value.length);
+	const buffer = allocSync(value.length);
 	const chars = new Uint8Array(buffer);
 	TEXT_ENCODER.encodeInto(value, chars);
 
