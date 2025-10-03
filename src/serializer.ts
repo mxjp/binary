@@ -62,7 +62,7 @@ export class Serializer {
 	}
 
 	/** Serialize an unsigned 64 bit int in the serializer's endianess. */
-	u64(value: number | bigint): void {
+	u64(value: number): void {
 		if (typeof value !== "number") {
 			throw new TypeError();
 		}
@@ -131,7 +131,7 @@ export class Serializer {
 			this.bool(false);
 		} else {
 			this.bool(true);
-			fn(this, value);
+			fn(value, this);
 		}
 	}
 
@@ -219,5 +219,5 @@ export interface SerializePrefixFn {
 }
 
 export interface SerializeFn<T> {
-	(serializer: Serializer, value: T): void;
+	(value: T, serializer: Serializer): void;
 }

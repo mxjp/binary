@@ -1,7 +1,24 @@
 {
 	"name": "@mxjp/binary",
+	"type": "module",
 	"version": "1.0.0",
+	"main": "./dist/index.js",
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "npm run build:es && npm run build:tests",
+		"build:es": "tsc -p tsconfig-es.json",
+		"build:tests": "tsc -p tsconfig-tests.json",
+		"start": "mx-parallel npm:start:*",
+		"start:es": "tsc -p tsconfig-es.json -w --preserveWatchOutput",
+		"start:tests": "tsc -p tsconfig-tests.json -w --preserveWatchOutput",
+		"test": "cd tests_out && node --enable-source-maps --test \"**/*.test.js\""
+	},
 	"devDependencies": {
+		"@mxjp/binary": "file:.",
+		"@mxjp/parallel": "^1.0.2",
+		"@types/node": "^24.6.2",
 		"typescript": "^5.9.3"
 	}
 }
