@@ -1,0 +1,7 @@
+{
+	"name": "@mxjp/binary",
+	"version": "1.0.0",
+	"devDependencies": {
+		"typescript": "^5.9.3"
+	}
+}
