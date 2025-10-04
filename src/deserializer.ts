@@ -3,7 +3,7 @@ export class Deserializer {
 	#littleEndian: boolean;
 	#buffer: ArrayBuffer;
 	#byteOffset: number;
-	#byteLength: number;
+	#byteEnd: number;
 	#view: DataView;
 
 	constructor(buffer: ArrayBuffer, byteOffset: number, byteLength: number, littleEndian?: boolean) {
@@ -16,18 +16,28 @@ export class Deserializer {
 		}
 		this.#buffer = buffer;
 		this.#byteOffset = byteOffset;
-		this.#byteLength = byteLength;
+		this.#byteEnd = byteOffset + byteLength;
 		this.#view = new DataView(buffer);
 	}
 
+	static from(source: ArrayBuffer | Uint8Array<ArrayBuffer>, littleEndian?: boolean) {
+		if (source.constructor === ArrayBuffer) {
+			return new Deserializer(source, 0, source.byteLength, littleEndian);
+		} else if (source.constructor === Uint8Array) {
+			return new Deserializer(source.buffer, source.byteOffset, source.byteLength, littleEndian);
+		} else {
+			throw new TypeError();
+		}
+	}
+
 	get bytesAvailable(): number {
-		return this.#byteLength - this.#byteOffset;
+		return this.#byteEnd - this.#byteOffset;
 	}
 
 	#advanceBy(byteLength: number): number {
 		const byteOffset = this.#byteOffset;
 		const next = byteOffset + byteLength;
-		if (next > this.#byteLength) {
+		if (next > this.#byteEnd) {
 			throw new DeserializerEndError();
 		}
 		this.#byteOffset = next;
@@ -37,8 +47,8 @@ export class Deserializer {
 	/**
 	 * Create a copy of this deserializer in it's current state that views the same underlying data.
 	 */
-	fork(): Deserializer {
-		return new Deserializer(this.#buffer, this.#byteOffset, this.#byteLength, this.#littleEndian);
+	fork(littleEndian?: boolean): Deserializer {
+		return new Deserializer(this.#buffer, this.#byteOffset, this.bytesAvailable, littleEndian ?? this.#littleEndian);
 	}
 
 	/** Deserialize an unsigned 8 bit int. */
@@ -102,7 +112,10 @@ export class Deserializer {
 	 * let array = d.unsafeViewBytes(7, Uint8Array);
 	 * ```
 	 */
-	unsafeViewBytes<T extends typeof Uint8Array<ArrayBuffer> | typeof Uint16Array<ArrayBuffer> | typeof Uint32Array<ArrayBuffer> | typeof DataView<ArrayBuffer>>(byteLength: number, ctor: T): InstanceType<T> {
+	unsafeViewBytes<T extends typeof Uint8Array<ArrayBuffer> | typeof DataView<ArrayBuffer>>(byteLength: number, ctor: T): InstanceType<T> {
+		if (!Number.isSafeInteger(byteLength) || ctor as unknown !== Uint8Array && ctor !== DataView) {
+			throw new TypeError();
+		}
 		const byteOffset = this.#advanceBy(byteLength);
 		return new (ctor as typeof Uint8Array)(this.#buffer, byteOffset, byteLength) as InstanceType<T>;
 	}
@@ -111,6 +124,9 @@ export class Deserializer {
 	 * Deserialize bytes by copying.
 	 */
 	copyBytes(byteLength: number): ArrayBuffer {
+		if (!Number.isSafeInteger(byteLength)) {
+			throw new TypeError();
+		}
 		const byteOffset = this.#advanceBy(byteLength);
 		return this.#buffer.slice(byteOffset, byteOffset + byteLength);
 	}
