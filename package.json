@@ -19,6 +19,7 @@
 		"@mxjp/binary": "file:.",
 		"@mxjp/parallel": "^1.0.2",
 		"@types/node": "^24.6.2",
+		"tinybench": "^5.0.1",
 		"typescript": "^5.9.3"
 	}
 }
