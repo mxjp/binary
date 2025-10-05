@@ -1,3 +1,4 @@
+import { asUint8Array } from "./bytes.js";
 
 export class Serializer {
 	#littleEndian: boolean;
@@ -139,15 +140,9 @@ export class Serializer {
 	 * Serialize bytes by copying them when {@link serialize serializing}.
 	 */
 	unsafeBytes(value: ArrayBuffer | Uint8Array<ArrayBuffer>): void {
-		if (value.constructor !== ArrayBuffer && value.constructor !== Uint8Array) {
-			throw new TypeError();
-		}
+		const bytes = asUint8Array(value);
 		this.#push(value.byteLength, (ctx, byteOffset) => {
-			if (value.constructor === Uint8Array) {
-				ctx.array.set(value, byteOffset);
-			} else {
-				ctx.array.set(new Uint8Array(value), byteOffset);
-			}
+			ctx.array.set(bytes, byteOffset);
 		});
 	}
 
@@ -157,11 +152,9 @@ export class Serializer {
 	 * See {@link unsafeBytes}.
 	 */
 	prefixedUnsafeBytes(prefix: SerializePrefixFn, value: ArrayBuffer | Uint8Array<ArrayBuffer>): void {
-		if (value.constructor !== ArrayBuffer && value.constructor !== Uint8Array) {
-			throw new TypeError();
-		}
+		const bytes = asUint8Array(value);
 		prefix.call(this, value.byteLength);
-		this.unsafeBytes(value);
+		this.unsafeBytes(bytes);
 	}
 
 	/**

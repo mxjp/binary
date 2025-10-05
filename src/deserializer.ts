@@ -1,3 +1,4 @@
+import { isArrayBuffer, isUint8Array } from "./bytes.js";
 
 export class Deserializer {
 	#littleEndian: boolean;
@@ -8,7 +9,7 @@ export class Deserializer {
 
 	constructor(buffer: ArrayBuffer, byteOffset: number, byteLength: number, littleEndian?: boolean) {
 		this.#littleEndian = littleEndian ?? true;
-		if (typeof this.#littleEndian !== "boolean" || buffer.constructor !== ArrayBuffer || !Number.isSafeInteger(byteOffset) || !Number.isSafeInteger(byteLength)) {
+		if (typeof this.#littleEndian !== "boolean" || !isArrayBuffer(buffer) || !Number.isSafeInteger(byteOffset) || !Number.isSafeInteger(byteLength)) {
 			throw new TypeError();
 		}
 		if (byteOffset < 0 || byteLength < 0 || (byteOffset + byteLength) > buffer.byteLength) {
@@ -21,9 +22,9 @@ export class Deserializer {
 	}
 
 	static from(source: ArrayBuffer | Uint8Array<ArrayBuffer>, littleEndian?: boolean) {
-		if (source.constructor === ArrayBuffer) {
+		if (isArrayBuffer(source)) {
 			return new Deserializer(source, 0, source.byteLength, littleEndian);
-		} else if (source.constructor === Uint8Array) {
+		} else if (isUint8Array(source)) {
 			return new Deserializer(source.buffer, source.byteOffset, source.byteLength, littleEndian);
 		} else {
 			throw new TypeError();
