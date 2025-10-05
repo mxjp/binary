@@ -46,6 +46,8 @@ export class Deserializer {
 
 	/**
 	 * Create a copy of this deserializer in it's current state that views the same underlying data.
+	 *
+	 * @param littleEndian True to use little endian byte order. Default is this deserializer's byte order.
 	 */
 	fork(littleEndian?: boolean): Deserializer {
 		return new Deserializer(this.#buffer, this.#byteOffset, this.bytesAvailable, littleEndian ?? this.#littleEndian);
