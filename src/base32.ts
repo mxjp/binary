@@ -9,11 +9,11 @@ const PAD_ASCII = "=".charCodeAt(0);
  *
  * See RFC 3548 for more info.
  *
- * @param value The bytes to encode.
+ * @param bytes The bytes to encode.
  * @param pad True, to include padding. Default is false.
  */
-export function base32Encode(value: Bytes, pad = false): string {
-	const array = asUint8Array(value);
+export function base32Encode(bytes: Bytes, pad = false): string {
+	const array = asUint8Array(bytes);
 	const rest = array.byteLength % 5;
 	const comp = array.byteLength - rest;
 	const base32Length = pad ? Math.ceil(array.byteLength / 5) * 8 : Math.ceil(array.byteLength / 5 * 8);
@@ -51,5 +51,7 @@ export function base32Encode(value: Bytes, pad = false): string {
 		}
 		base32.fill(PAD_ASCII, b);
 	}
-	return new TextDecoder().decode(base32);
+	const value = new TextDecoder().decode(base32);
+	base32.fill(0);
+	return value;
 }

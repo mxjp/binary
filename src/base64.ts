@@ -40,7 +40,9 @@ function encode(bytes: Uint8Array<ArrayBuffer>, map: Uint8Array<ArrayBuffer>, pa
 			}
 		}
 	}
-	return new TextDecoder().decode(base64);
+	const value = new TextDecoder().decode(base64);
+	base64.fill(0);
+	return value;
 }
 
 function decode(value: string, map: Uint16Array): Uint8Array {
@@ -89,6 +91,7 @@ function decode(value: string, map: Uint16Array): Uint8Array {
 			throw new DecodeBase64Error();
 		}
 	}
+	base64.fill(0);
 	return bytes;
 }
 
