@@ -45,7 +45,7 @@ function encode(bytes: Uint8Array<ArrayBuffer>, map: Uint8Array<ArrayBuffer>, pa
 	return value;
 }
 
-function decode(value: string, map: Uint16Array): Uint8Array {
+function decode(value: string, map: Uint16Array): Uint8Array<ArrayBuffer> {
 	if (typeof value !== "string") {
 		throw new TypeError();
 	}
@@ -128,7 +128,7 @@ export function base64UrlEncode(bytes: Bytes, padding = false): string {
  *
  * @param value The text to decode.
  */
-export function base64Decode(value: string): Uint8Array {
+export function base64Decode(value: string): Uint8Array<ArrayBuffer> {
 	return decode(value, ASCII_TO_BASE64);
 }
 
@@ -141,6 +141,6 @@ export function base64Decode(value: string): Uint8Array {
  *
  * @param value The text to decode.
  */
-export function base64UrlDecode(value: string): Uint8Array {
+export function base64UrlDecode(value: string): Uint8Array<ArrayBuffer> {
 	return decode(value, ASCII_TO_BASE64URL);
 }
