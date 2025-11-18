@@ -80,6 +80,12 @@ await suite("deserializer", async () => {
 		strictEqual(view.byteLength, 3);
 	});
 
+	await test("utf8", () => {
+		const d = Deserializer.from(new Uint8Array([102, 114, 105, 116]));
+		strictEqual(d.utf8(2), "fr");
+		strictEqual(d.utf8(2), "it");
+	});
+
 	await test("source offsets", () => {
 		const buffer = new Uint8Array([1, 2, 3, 4]).buffer;
 		const d = new Deserializer(buffer, 1, 2);

@@ -133,6 +133,13 @@ export class Deserializer {
 		const byteOffset = this.#advanceBy(byteLength);
 		return this.#buffer.slice(byteOffset, byteOffset + byteLength);
 	}
+
+	/**
+	 * Deserialize a utf-8 encoded string.
+	 */
+	utf8(byteLength: number): string {
+		return new TextDecoder().decode(this.unsafeViewBytes(byteLength, Uint8Array));
+	}
 }
 
 export class DeserializerEndError extends Error {}
