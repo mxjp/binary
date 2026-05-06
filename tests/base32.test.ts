@@ -1,5 +1,5 @@
 import { base32Encode } from "@mxjp/binary";
-import { strictEqual } from "assert";
+import { strictEqual } from "node:assert";
 import { test } from "node:test";
 
 await test("base32", async () => {
