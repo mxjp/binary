@@ -116,7 +116,7 @@ export class Deserializer {
 	 * ```
 	 */
 	unsafeViewBytes<T extends typeof Uint8Array<ArrayBuffer> | typeof DataView<ArrayBuffer>>(byteLength: number, ctor: T): InstanceType<T> {
-		if (!Number.isSafeInteger(byteLength) || ctor as unknown !== Uint8Array && ctor !== DataView) {
+		if (!Number.isSafeInteger(byteLength) || (ctor as unknown !== Uint8Array && ctor !== DataView)) {
 			throw new TypeError();
 		}
 		const byteOffset = this.#advanceBy(byteLength);
