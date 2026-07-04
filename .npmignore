@@ -1,5 +1,6 @@
 /.editorconfig
 /.github
 /bench
+/changelog.md
 /tests*
 /tsconfig*
