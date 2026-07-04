@@ -138,37 +138,46 @@ export class Serializer {
 
 	/**
 	 * Serialize bytes by copying them when {@link serialize serializing}.
+	 *
+	 * @returns The view that will be copied when {@link serialize serializing}. This can be used for zero filling sensitive data after serialization.
 	 */
-	unsafeBytes(value: ArrayBuffer | Uint8Array<ArrayBuffer>): void {
+	unsafeBytes(value: ArrayBuffer | Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
 		const bytes = asUint8Array(value);
 		this.#push(value.byteLength, (ctx, byteOffset) => {
 			ctx.array.set(bytes, byteOffset);
 		});
+		return bytes;
 	}
 
 	/**
 	 * Serialize bytes by copying them when {@link serialize serializing} prefixed by their byte length.
 	 *
 	 * See {@link unsafeBytes}.
+	 *
+	 * @returns The view that will be copied when {@link serialize serializing}. This can be used for zero filling sensitive data after serialization.
 	 */
-	prefixedUnsafeBytes(prefix: SerializePrefixFn, value: ArrayBuffer | Uint8Array<ArrayBuffer>): void {
+	prefixedUnsafeBytes(prefix: SerializePrefixFn, value: ArrayBuffer | Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
 		const bytes = asUint8Array(value);
 		prefix.call(this, value.byteLength);
-		this.unsafeBytes(bytes);
+		return this.unsafeBytes(bytes);
 	}
 
 	/**
 	 * Serialize a utf-8 encoded string.
+	 *
+	 * @returns The encoded value that will be copied when {@link serialize serializing}. This can be used for zero filling sensitive data after serialization.
 	 */
-	utf8(value: string): void {
-		this.unsafeBytes(new TextEncoder().encode(value));
+	utf8(value: string): Uint8Array<ArrayBuffer> {
+		return this.unsafeBytes(new TextEncoder().encode(value));
 	}
 
 	/**
 	 * Serialize a utf-8 encoded string prefixed by it's byte length.
+	 *
+	 * @returns The encoded value that will be copied when {@link serialize serializing}. This can be used for zero filling sensitive data after serialization.
 	 */
-	prefixedUtf8(prefix: SerializePrefixFn, value: string): void {
-		this.prefixedUnsafeBytes(prefix, new TextEncoder().encode(value));
+	prefixedUtf8(prefix: SerializePrefixFn, value: string): Uint8Array<ArrayBuffer> {
+		return this.prefixedUnsafeBytes(prefix, new TextEncoder().encode(value));
 	}
 
 	/**
